@@ -1,0 +1,221 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+model Hotel {
+  id          Int      @id @default(autoincrement())
+  name        String
+  cnpj        String   @unique
+  address     String
+  phone       String
+  email       String
+  users       User[]
+  createdAt   DateTime @default(now())
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  name           String
+  email          String    @unique
+  passwordHash   String
+  role           UserRole
+  hotelId        Int
+  hotel          Hotel     @relation(fields: [hotelId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  STAFF
+}
+
+// model Guest {
+//   id             Int       @id @default(autoincrement())
+//   name           String
+//   documentType   String
+//   documentNumber String
+//   phone          String
+//   email          String?
+//   reservations   Reservation[]
+// }
+
+model Guest {
+  id             Int             @id @default(autoincrement())
+  name           String
+  documentType   String
+  documentNumber String
+  phone          String
+  email          String?
+  preferences    String?         // Ex: "Quarto silencioso, cama de casal"
+  notes          String?         // Observações gerais do hóspede
+  documents      GuestDocument[] // Relacionamento com documentos
+  reservations   Reservation[]
+}
+
+model GuestDocument {
+  id          Int      @id @default(autoincrement())
+  guestId     Int
+  guest       Guest    @relation(fields: [guestId], references: [id])
+  type        DocumentType // RG, CPF, Passaporte etc.
+  fileUrl     String   // Caminho do arquivo (upload)
+  number      String   // Número do documento
+  issuedAt    DateTime?
+  createdAt   DateTime @default(now())
+}
+
+enum DocumentType {
+  RG
+  CPF
+  PASSPORT
+  CNH
+  OTHER
+}
+
+
+model Room {
+  id             Int       @id @default(autoincrement())
+  number         String    @unique
+  category       String
+  status         RoomStatus
+  pricePerNight  Decimal
+  doubleBeds     Int       @default(0) // Camas de casal
+  singleBeds     Int       @default(0) // Camas de solteiro
+  capacity       Int       @default(1) // Quantidade de pessoas total
+  reservations   Reservation[]
+  maintenance    Maintenance[]
+}
+
+
+enum RoomStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+  CLEANING
+}
+
+model Reservation {
+  id             Int       @id @default(autoincrement())
+  guestId        Int
+  guest          Guest     @relation(fields: [guestId], references: [id])
+  roomId         Int
+  room           Room      @relation(fields: [roomId], references: [id])
+  checkIn        DateTime
+  checkOut       DateTime
+  status         ReservationStatus
+  paymentStatus  PaymentStatus
+  channel        String    // Ex: DIRECT, BOOKING, AIRBNB
+  services       Service[]
+  payments       Payment[]
+  createdAt      DateTime  @default(now())
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model Service {
+  id             Int       @id @default(autoincrement())
+  reservationId  Int
+  reservation    Reservation @relation(fields: [reservationId], references: [id])
+  description    String
+  amount         Decimal
+  createdAt      DateTime  @default(now())
+}
+
+model Payment {
+  id             Int       @id @default(autoincrement())
+  reservationId  Int
+  reservation    Reservation @relation(fields: [reservationId], references: [id])
+  amount         Decimal
+  method         PaymentMethod
+  status         PaymentStatus
+  date           DateTime
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  PIX
+  TRANSFER
+}
+
+model Maintenance {
+  id             Int       @id @default(autoincrement())
+  roomId         Int
+  room           Room      @relation(fields: [roomId], references: [id])
+  description    String
+  status         MaintenanceStatus
+  scheduledDate  DateTime
+}
+
+enum MaintenanceStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Staff {
+  id       Int        @id @default(autoincrement())
+  name     String
+  role     StaffRole
+  contact  String
+  tasks    Task[]
+  shifts   WorkShift[]
+}
+
+model WorkShift {
+  id        Int      @id @default(autoincrement())
+  staffId   Int
+  staff     Staff    @relation(fields: [staffId], references: [id])
+  date      DateTime
+  startTime DateTime
+  endTime   DateTime
+}
+
+
+enum StaffRole {
+  RECEPTION
+  CLEANING
+  MAINTENANCE
+  MANAGER
+}
+
+model Task {
+  id             Int       @id @default(autoincrement())
+  staffId        Int
+  staff          Staff     @relation(fields: [staffId], references: [id])
+  description    String
+  status         TaskStatus
+  dueDate        DateTime
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
