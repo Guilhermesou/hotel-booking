@@ -9,6 +9,7 @@
     "lint": "eslint --fix"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
     "@heroui/button": "2.2.20",
     "@heroui/code": "2.2.15",
     "@heroui/input": "2.4.20",
@@ -27,6 +28,7 @@
     "@react-aria/visually-hidden": "3.8.23",
     "bcrypt": "^6.0.0",
     "clsx": "2.1.1",
+    "date-fns": "^4.1.0",
     "framer-motion": "11.13.1",
     "intl-messageformat": "10.7.16",
     "jsonwebtoken": "^9.0.2",
@@ -37,7 +39,9 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-toastify": "^11.0.5",
-    "swr": "^2.3.3"
+    "recharts": "^2.15.3",
+    "swr": "^2.3.3",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.8",
@@ -46,6 +50,7 @@
     "@next/eslint-plugin-next": "15.3.1",
     "@react-types/shared": "3.29.0",
     "@types/bcrypt": "^5.0.2",
+    "@types/date-fns": "^2.6.3",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "22.15.3",
     "@types/react": "18.3.3",

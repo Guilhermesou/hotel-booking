@@ -54,7 +54,7 @@ export default function RegisterPage() {
     <Card className="max-w-lg mx-auto mt-10 p-6 space-y-6">
       <h1 className="text-2xl font-bold">Cadastro de Hotel</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 overflow-y-scroll">
         <div>
           <label className="block text-sm font-medium mb-1">Nome do Hotel</label>
           <Input

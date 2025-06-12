@@ -20,7 +20,8 @@ import {
   ModalFooter,
   Card,
   CardBody,
-  useDisclosure
+  useDisclosure,
+  Spinner
 } from '@heroui/react';
 import { SearchIcon, PlusIcon, EyeIcon, EditIcon, TrashIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -154,7 +155,9 @@ export default function GuestsPage() {
     { key: 'actions', label: 'Ações' }
   ];
 
-  if (loading) return <p className="text-center mt-10">Carregando...</p>;
+  if (loading) return (<div className='flex justify-center items-center h-64'>
+    <Spinner size="lg" />
+  </div>);
 
   return (
     <div className="max-w-6xl mx-auto mt-10 px-4">

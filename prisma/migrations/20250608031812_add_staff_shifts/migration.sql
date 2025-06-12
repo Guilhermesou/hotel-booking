@@ -1,9 +1,0 @@
--- CreateTable
-CREATE TABLE "WorkShift" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "staffId" INTEGER NOT NULL,
-    "date" DATETIME NOT NULL,
-    "startTime" DATETIME NOT NULL,
-    "endTime" DATETIME NOT NULL,
-    CONSTRAINT "WorkShift_staffId_fkey" FOREIGN KEY ("staffId") REFERENCES "Staff" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
-);

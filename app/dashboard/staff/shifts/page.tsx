@@ -114,11 +114,13 @@ export default function ShiftsPage() {
               onChange={(value) => setForm({ ...form, staffId: value })}
             >
               <SelectItem>Selecione o funcionário</SelectItem>
-              {staffList.map((s) => (
-                <SelectItem key={s.id}>
-                  {s.name}
-                </SelectItem>
-              ))}
+              <>
+                {staffList.map((s) => (
+                  <SelectItem key={s.id}>
+                    {s.name}
+                  </SelectItem>
+                ))}
+              </>
             </Select>
 
             <Input

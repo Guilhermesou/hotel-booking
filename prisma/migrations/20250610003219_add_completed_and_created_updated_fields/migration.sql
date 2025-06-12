@@ -29,7 +29,24 @@ CREATE TABLE "Guest" (
     "documentType" TEXT NOT NULL,
     "documentNumber" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
-    "email" TEXT
+    "email" TEXT,
+    "preferences" TEXT,
+    "notes" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "GuestDocument" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "guestId" INTEGER NOT NULL,
+    "type" TEXT NOT NULL,
+    "fileUrl" TEXT NOT NULL,
+    "number" TEXT NOT NULL,
+    "issuedAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "GuestDocument_guestId_fkey" FOREIGN KEY ("guestId") REFERENCES "Guest" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -38,7 +55,12 @@ CREATE TABLE "Room" (
     "number" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "status" TEXT NOT NULL,
-    "pricePerNight" DECIMAL NOT NULL
+    "pricePerNight" DECIMAL NOT NULL,
+    "doubleBeds" INTEGER NOT NULL DEFAULT 0,
+    "singleBeds" INTEGER NOT NULL DEFAULT 0,
+    "capacity" INTEGER NOT NULL DEFAULT 1,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
 );
 
 -- CreateTable
@@ -52,6 +74,7 @@ CREATE TABLE "Reservation" (
     "paymentStatus" TEXT NOT NULL,
     "channel" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Reservation_guestId_fkey" FOREIGN KEY ("guestId") REFERENCES "Guest" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Reservation_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
@@ -84,6 +107,8 @@ CREATE TABLE "Maintenance" (
     "description" TEXT NOT NULL,
     "status" TEXT NOT NULL,
     "scheduledDate" DATETIME NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Maintenance_roomId_fkey" FOREIGN KEY ("roomId") REFERENCES "Room" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -96,11 +121,24 @@ CREATE TABLE "Staff" (
 );
 
 -- CreateTable
+CREATE TABLE "WorkShift" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "staffId" INTEGER NOT NULL,
+    "date" DATETIME NOT NULL,
+    "startTime" DATETIME NOT NULL,
+    "endTime" DATETIME NOT NULL,
+    CONSTRAINT "WorkShift_staffId_fkey" FOREIGN KEY ("staffId") REFERENCES "Staff" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
 CREATE TABLE "Task" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "staffId" INTEGER NOT NULL,
     "description" TEXT NOT NULL,
     "status" TEXT NOT NULL,
+    "completedAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
     "dueDate" DATETIME NOT NULL,
     CONSTRAINT "Task_staffId_fkey" FOREIGN KEY ("staffId") REFERENCES "Staff" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );

@@ -1,309 +1,345 @@
-// // app/dashboard/page.tsx
-
-// "use client"
-
-// import { useEffect, useState } from "react"
-// import { useRouter } from "next/navigation"
-// import { getHotels, deleteHotel, updateHotel } from "@/lib/hotels"
-// import { Button } from "@heroui/button"
-// import { Input } from "@heroui/input"
-// import { Card } from "@heroui/react"
-
-// interface Hotel {
-//   id: string
-//   name: string
-//   email: string
-//   cnpj: string
-//   address: string
-//   phone: string
-// }
-
-// export default function DashboardPage() {
-//   const [hotels, setHotels] = useState<Hotel[]>([])
-//   const [loading, setLoading] = useState(true)
-//   const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null)
-//   const [isModalOpen, setIsModalOpen] = useState(false)
-//   const router = useRouter()
+"use client"
 
 
+import React, { useEffect, useState } from 'react';
+import { Card, CardBody, CardHeader, Button, Select, SelectItem, Spinner } from "@heroui/react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { DollarSign, Users, Bed, Wrench, TrendingUp, Calendar, AlertTriangle, CheckCircle } from 'lucide-react';
 
-//   useEffect(() => {
-//     const fetchHotels = async () => {
-//       try {
-//         const res = await getHotels()
-//         setHotels(res)
-//       } catch (err) {
-//         console.error("Erro ao carregar hoteis", err)
-//         router.push("/login")
-//       } finally {
-//         setLoading(false)
-//       }
-//     }
-
-//     fetchHotels()
-//   }, [router])
-
-//   const handleDelete = async (id: string) => {
-//     if (!confirm("Tem certeza que deseja excluir este hotel?")) return
-
-//     try {
-//       await deleteHotel(id)
-//       setHotels((prev) => prev.filter((hotel) => hotel.id !== id))
-//     } catch (err) {
-//       console.error("Erro ao excluir hotel", err)
-//     }
-//   }
-
-//   const handleEdit = (hotel: Hotel) => {
-//     setSelectedHotel(hotel)
-//     setIsModalOpen(true)
-//   }
-
-//   const handleModalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     if (!selectedHotel) return
-//     setSelectedHotel({ ...selectedHotel, [e.target.name]: e.target.value })
-//   }
-
-//   const handleModalSave = async () => {
-//     if (!selectedHotel) return
-//     try {
-//       const updated = await updateHotel(selectedHotel.id,selectedHotel)
-//       setHotels((prev) =>
-//         prev.map((h) => (h.id === updated.id ? updated : h))
-//       )
-//       setIsModalOpen(false)
-//     } catch (err) {
-//       console.error("Erro ao atualizar hotel", err)
-//     }
-//   }
-
-//   if (loading) return <p className="text-center mt-10">Carregando...</p>
-
-//   return (
-//     <div className="max-w-4xl mx-auto mt-10 px-4">
-//       <h1 className="text-3xl font-bold mb-6">Dashboard de Hotéis</h1>
-
-//       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-//         {hotels.map((hotel) => (
-//           <Card key={hotel.id} className="p-4">
-//             <h2 className="text-xl font-semibold mb-2">{hotel.name}</h2>
-//             <p><strong>Email:</strong> {hotel.email}</p>
-//             <p><strong>CNPJ:</strong> {hotel.cnpj}</p>
-//             <p><strong>Endereço:</strong> {hotel.address}</p>
-//             <p><strong>Telefone:</strong> {hotel.phone}</p>
-
-//             <div className="mt-4 flex gap-2">
-//               <Button
-//                 onClick={() => handleEdit(hotel)}
-//                 className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
-//               >
-//                 Editar
-//               </Button>
-//               <Button
-//                 onClick={() => handleDelete(hotel.id)}
-//                 className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-//               >
-//                 Excluir
-//               </Button>
-//             </div>
-//           </Card>
-//         ))}
-//       </div>
-
-//       {isModalOpen && selectedHotel && (
-//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-//           <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
-//             <h2 className="text-xl font-bold mb-4">Editar Hotel</h2>
-//             <form className="space-y-4">
-//               <Input
-//                 name="name"
-//                 placeholder="Nome do Hotel"
-//                 value={selectedHotel.name}
-//                 onChange={handleModalChange}
-//               />
-//               <Input
-//                 name="email"
-//                 placeholder="Email"
-//                 value={selectedHotel.email}
-//                 onChange={handleModalChange}
-//               />
-//               <Input
-//                 name="cnpj"
-//                 placeholder="CNPJ"
-//                 value={selectedHotel.cnpj}
-//                 onChange={handleModalChange}
-//               />
-//               <Input
-//                 name="address"
-//                 placeholder="Endereço"
-//                 value={selectedHotel.address}
-//                 onChange={handleModalChange}
-//               />
-//               <Input
-//                 name="phone"
-//                 placeholder="Telefone"
-//                 value={selectedHotel.phone}
-//                 onChange={handleModalChange}
-//               />
-//             </form>
-//             <div className="flex justify-end gap-2 mt-6">
-//               <Button
-//                 onClick={() => setIsModalOpen(false)}
-//                 className="bg-gray-200 hover:bg-gray-300"
-//               >
-//                 Cancelar
-//               </Button>
-//               <Button
-//                 onClick={handleModalSave}
-//                 className="bg-blue-600 hover:bg-blue-700 text-white"
-//               >
-//                 Salvar
-//               </Button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   )
-// }
-
-
-'use client'
-
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { getHotels, deleteHotel, updateHotel } from "@/lib/hotels"
-import { Button, Card, CardBody, CardHeader, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/react"
-import { EditIcon, TrashIcon } from "lucide-react"
-
-interface Hotel {
-  id: string
-  name: string
-  email: string
-  cnpj: string
-  address: string
-  phone: string
-}
-
-export default function DashboardPage() {
-  const [hotels, setHotels] = useState<Hotel[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const router = useRouter()
+const Dashboard = () => {
+  const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState('30');
+  const [data, setData] = useState({
+    occupancy: null,
+    revenue: null,
+    bookings: null,
+    guests: null,
+    maintenance: null,
+    forecast: null,
+    staffPerformance: null
+  });
 
   useEffect(() => {
-    const fetchHotels = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const res = await getHotels()
-        setHotels(res)
-      } catch (err) {
-        console.error("Erro ao carregar hoteis", err)
-        router.push("/login")
+        const [
+          occupancyRes,
+          revenueRes,
+          bookingsRes,
+          guestsRes,
+          maintenanceRes,
+          forecastRes,
+          staffRes
+        ] = await Promise.all([
+          fetch('/api/reports/occupancy'),
+          fetch(`/api/reports/revenue?period=${period}`),
+          fetch(`/api/reports/bookings?period=${period}`),
+          fetch('/api/reports/guests'),
+          fetch('/api/reports/maintenance'),
+          fetch('/api/reports/forecast'),
+          fetch(`/api/reports/staff-performance?period=${period}`)
+        ]);
+
+        const [occupancy, revenue, bookings, guests, maintenance, forecast, staffPerformance] = await Promise.all([
+          occupancyRes.json(),
+          revenueRes.json(),
+          bookingsRes.json(),
+          guestsRes.json(),
+          maintenanceRes.json(),
+          forecastRes.json(),
+          staffRes.json()
+        ]);
+
+        setData({
+          occupancy,
+          revenue,
+          bookings,
+          guests,
+          maintenance,
+          forecast,
+          staffPerformance
+        });
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchHotels()
-  }, [router])
+    fetchData();
+  }, [period]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este hotel?")) return
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
 
-    try {
-      await deleteHotel(id)
-      setHotels((prev) => prev.filter((hotel) => hotel.id !== id))
-    } catch (err) {
-      console.error("Erro ao excluir hotel", err)
-    }
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spinner size="lg" />
+      </div>
+    );
   }
-
-  const handleEdit = (hotel: Hotel) => {
-    setSelectedHotel(hotel)
-    setIsModalOpen(true)
-  }
-
-  const handleModalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selectedHotel) return
-    setSelectedHotel({ ...selectedHotel, [e.target.name]: e.target.value })
-  }
-
-  const handleModalSave = async () => {
-    if (!selectedHotel) return
-    try {
-      const updated = await updateHotel(selectedHotel.id, selectedHotel)
-      setHotels((prev) =>
-        prev.map((h) => (h.id === updated.id ? updated : h))
-      )
-      setIsModalOpen(false)
-    } catch (err) {
-      console.error("Erro ao atualizar hotel", err)
-    }
-  }
-
-  if (loading) return <p className="text-center mt-10">Carregando...</p>
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Dashboard de Hotéis</h1>
-        <p className="text-gray-600">Gerencie os hotéis cadastrados</p>
+    <div className="space-y-6 p-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-gray-600">Visão geral do desempenho do hotel</p>
+        </div>
+        <Select
+          label="Período"
+          selectedKeys={[period]}
+          onSelectionChange={(keys) => setPeriod(Array.from(keys)[0])}
+          className="max-w-xs"
+        >
+          <SelectItem key="7">Últimos 7 dias</SelectItem>
+          <SelectItem key="30">Últimos 30 dias</SelectItem>
+          <SelectItem key="90">Últimos 3 meses</SelectItem>
+        </Select>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {hotels.map((hotel) => (
-          <Card key={hotel.id}>
-            <CardHeader className="pb-0">
-              <h2 className="text-lg font-semibold">{hotel.name}</h2>
-              <p className="text-sm text-gray-500">{hotel.email}</p>
-            </CardHeader>
-            <CardBody className="space-y-2 text-sm">
-              <p><strong>CNPJ:</strong> {hotel.cnpj}</p>
-              <p><strong>Endereço:</strong> {hotel.address}</p>
-              <p><strong>Telefone:</strong> {hotel.phone}</p>
-              <div className="flex gap-2 pt-2">
-                <Button
-                  onClick={() => handleEdit(hotel)}
-                  startContent={<EditIcon size={16} />}
-                  size="sm"
-                  variant="flat"
-                  color="warning"
+      {/* KPIs principais */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardBody className="flex flex-row items-center space-x-4">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Bed className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Taxa de Ocupação</p>
+              <p className="text-2xl font-bold">{data.occupancy?.occupancyRate}%</p>
+              <p className="text-xs text-gray-500">
+                {data.occupancy?.occupied}/{data.occupancy?.total} quartos
+              </p>
+            </div>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardBody className="flex flex-row items-center space-x-4">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <DollarSign className="h-6 w-6 text-green-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Receita Total</p>
+              <p className="text-2xl font-bold">{formatCurrency(data.revenue?.totalRevenue || 0)}</p>
+              <p className="text-xs text-gray-500">
+                ADR: {formatCurrency(data.revenue?.adr || 0)}
+              </p>
+            </div>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardBody className="flex flex-row items-center space-x-4">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <Users className="h-6 w-6 text-purple-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Hóspedes Ativos</p>
+              <p className="text-2xl font-bold">{data.guests?.activeGuests || 0}</p>
+              <p className="text-xs text-gray-500">
+                +{data.guests?.newGuests || 0} novos
+              </p>
+            </div>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardBody className="flex flex-row items-center space-x-4">
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <Wrench className="h-6 w-6 text-orange-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Manutenção</p>
+              <p className="text-2xl font-bold">{data.maintenance?.pendingTasks || 0}</p>
+              <p className="text-xs text-gray-500">
+                {data.maintenance?.overdueTasks || 0} atrasadas
+              </p>
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+
+      {/* Gráficos principais */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Receita por dia */}
+        <Card>
+          <CardHeader>
+            <h3 className="text-lg font-semibold">Receita Diária</h3>
+          </CardHeader>
+          <CardBody>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={data.revenue?.revenueByDay || []}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip formatter={(value) => formatCurrency(value)} />
+                <Line type="monotone" dataKey="revenue" stroke="#8884d8" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardBody>
+        </Card>
+
+        {/* Ocupação prevista */}
+        <Card>
+          <CardHeader>
+            <h3 className="text-lg font-semibold">Previsão de Ocupação (30 dias)</h3>
+          </CardHeader>
+          <CardBody>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={data.forecast?.occupancyByDay?.slice(0, 10) || []}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip formatter={(value) => `${value.toFixed(1)}%`} />
+                <Line type="monotone" dataKey="occupancyRate" stroke="#82ca9d" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardBody>
+        </Card>
+      </div>
+
+      {/* Mais gráficos */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Status das reservas */}
+        <Card>
+          <CardHeader>
+            <h3 className="text-lg font-semibold">Status das Reservas</h3>
+          </CardHeader>
+          <CardBody>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={data.bookings?.bookingsByStatus || []}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="_count.id"
+                  nameKey="status"
                 >
-                  Editar
-                </Button>
-                <Button
-                  onClick={() => handleDelete(hotel.id)}
-                  startContent={<TrashIcon size={16} />}
-                  size="sm"
-                  variant="flat"
-                  color="danger"
-                >
-                  Excluir
-                </Button>
+                  {(data.bookings?.bookingsByStatus || []).map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardBody>
+        </Card>
+
+        {/* Performance da equipe */}
+        <Card>
+          <CardHeader>
+            <h3 className="text-lg font-semibold">Performance da Equipe</h3>
+          </CardHeader>
+          <CardBody>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={data.staffPerformance || []}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="completedTasks" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardBody>
+        </Card>
+
+        {/* Métricas adicionais */}
+        <Card>
+          <CardHeader>
+            <h3 className="text-lg font-semibold">Métricas Importantes</h3>
+          </CardHeader>
+          <CardBody className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">RevPAR</span>
+              <span className="font-semibold">{formatCurrency(data.revenue?.revpar || 0)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Taxa de Cancelamento</span>
+              <span className="font-semibold">{data.bookings?.cancellationRate || 0}%</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Tempo Médio de Estadia</span>
+              <span className="font-semibold">{data.revenue?.averageStayLength?.toFixed(1) || 0} dias</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Hóspedes Recorrentes</span>
+              <span className="font-semibold">{data.guests?.recurringGuests || 0}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600">Receita Projetada (30d)</span>
+              <span className="font-semibold">{formatCurrency(data.forecast?.projectedRevenue || 0)}</span>
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+
+      {/* Alertas e notificações */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-orange-500" />
+              Alertas
+            </h3>
+          </CardHeader>
+          <CardBody className="space-y-3">
+            {data.maintenance?.overdueTasks > 0 && (
+              <div className="flex items-center gap-2 p-2 bg-red-50 rounded-lg">
+                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                <span className="text-sm">{data.maintenance.overdueTasks} tarefas de manutenção atrasadas</span>
               </div>
-            </CardBody>
-          </Card>
-        ))}
-      </div>
+            )}
+            {data.maintenance?.roomsInMaintenance > 0 && (
+              <div className="flex items-center gap-2 p-2 bg-yellow-50 rounded-lg">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <span className="text-sm">{data.maintenance.roomsInMaintenance} quartos em manutenção</span>
+              </div>
+            )}
+            {data.bookings?.cancellationRate > 10 && (
+              <div className="flex items-center gap-2 p-2 bg-orange-50 rounded-lg">
+                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                <span className="text-sm">Taxa de cancelamento alta: {data.bookings.cancellationRate}%</span>
+              </div>
+            )}
+          </CardBody>
+        </Card>
 
-      {/* Modal de edição */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <ModalContent>
-          <ModalHeader>Editar Hotel</ModalHeader>
-          <ModalBody className="space-y-4">
-            <Input name="name" label="Nome" value={selectedHotel?.name || ''} onChange={handleModalChange} />
-            <Input name="email" label="Email" value={selectedHotel?.email || ''} onChange={handleModalChange} />
-            <Input name="cnpj" label="CNPJ" value={selectedHotel?.cnpj || ''} onChange={handleModalChange} />
-            <Input name="address" label="Endereço" value={selectedHotel?.address || ''} onChange={handleModalChange} />
-            <Input name="phone" label="Telefone" value={selectedHotel?.phone || ''} onChange={handleModalChange} />
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="light" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
-            <Button color="primary" onClick={handleModalSave}>Salvar</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        <Card>
+          <CardHeader>
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-500" />
+              Top Hóspedes
+            </h3>
+          </CardHeader>
+          <CardBody>
+            <div className="space-y-2">
+              {data.guests?.topGuests?.slice(0, 5).map((guest, index) => (
+                <div key={guest.id} className="flex justify-between items-center py-1">
+                  <span className="text-sm">{guest.name}</span>
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                    {guest.reservationCount} reservas
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardBody>
+        </Card>
+      </div>
     </div>
-  )
-}
+  );
+};
+
+export default Dashboard;

@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { MoreVertical, Plus } from 'lucide-react'
-import { Badge, ModalContent } from '@heroui/react'
+import { Plus } from 'lucide-react'
+import { ModalContent } from '@heroui/react'
 import { Button } from '@heroui/button'
 import { Input } from '@heroui/input'
-import { Card, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Modal, Select, SelectItem, addToast } from '@heroui/react'
+import { Modal, Select, SelectItem, addToast } from '@heroui/react'
+import { RoomList } from './components/RoomList'
 
 export default function RoomsPage() {
   const [rooms, setRooms] = useState<any[]>([])
@@ -25,10 +26,6 @@ export default function RoomsPage() {
   useEffect(() => {
     fetch('/api/rooms').then(res => res.json()).then(setRooms)
   }, [])
-
-  useEffect(() => {
-    console.log("QUARTOS -> ", rooms)
-  }, [rooms])
 
   interface Room {
     id: number
@@ -87,54 +84,19 @@ export default function RoomsPage() {
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Quartos</h2>
-        <Button onPress={() => {
-          setIsModalOpen(true)
-        }
-        }>
+        <Button
+          color='primary'
+          onPress={() => {
+            setIsModalOpen(true)
+          }}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Novo Quarto
         </Button>
       </div>
 
       {/* Lista de quartos em cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {rooms.map((room) => (
-          <Card key={room.id} className="relative p-4 space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">{room.name}</h3>
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button variant="ghost">
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu>
-                  <DropdownItem key="edit"
-
-                    onClick={() => {
-                      addToast({ title: 'Editar', description: 'Editar quarto não implementado', color: 'warning' })
-                    }}
-                  >
-                    Editar</DropdownItem>
-                  <DropdownItem
-                    key="delete"
-                    className="text-red-500"
-                    onClick={() => {
-                      addToast({ title: 'Excluir', description: 'Excluir quarto não implementado', color: 'danger' })
-                    }}
-                  >
-                    Excluir
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-            <div className="text-sm text-zinc-500">Capacidade: {room.capacity} pessoa(s)</div>
-            <Badge variant={statusMap[room.status]?.variant}>
-              {statusMap[room.status]?.label || 'Desconhecido'}
-            </Badge>
-          </Card>
-        ))}
-      </div>
+      <RoomList rooms={rooms} />
 
       <Modal isOpen={isModalOpen} onOpenChange={setIsModalOpen}>
         <ModalContent>

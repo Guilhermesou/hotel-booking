@@ -1,4 +1,4 @@
-export async function getHotels() {
+export async function getHotels(): Promise<Hotel[]> {
   const res = await fetch('/api/hotels');
   if (!res.ok) throw new Error('Erro ao buscar hotéis');
   return res.json();

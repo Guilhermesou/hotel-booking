@@ -1,155 +1,337 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react';
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Input,
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Card,
+  CardBody,
+  Spinner,
+  useDisclosure,
+  User
+} from '@heroui/react';
+import { PlusIcon, EditIcon, TrashIcon, SearchIcon } from 'lucide-react';
 
-import { Trash2, Pencil } from 'lucide-react'
-import { Button } from '@heroui/button'
-import { Input } from '@heroui/input'
-import { Card, Select, SelectItem, Modal } from '@heroui/react'
+interface Staff {
+  id: string;
+  name: string;
+  email?: string;
+  role?: string;
+  phone?: string;
+}
 
 export default function StaffPage() {
-  const [form, setForm] = useState({ name: '', role: 'RECEPTION', contact: '' })
-  const [staffList, setStaffList] = useState<any[]>([])
-  const [editId, setEditId] = useState<string | null>(null)
-  const [deleteId, setDeleteId] = useState<string | null>(null)
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [staff, setStaff] = useState<Staff[]>([]);
+  const [searchValue, setSearchValue] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Staff>>({});
+  const [createForm, setCreateForm] = useState<Partial<Staff>>({
+    name: '',
+    email: '',
+    role: '',
+    phone: '',
+  });
+
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onClose: onDeleteClose
+  } = useDisclosure();
+
+  const {
+    isOpen: isEditOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose
+  } = useDisclosure();
+
+  const {
+    isOpen: isCreateOpen,
+    onOpen: onCreateOpen,
+    onClose: onCreateClose
+  } = useDisclosure();
 
   const fetchStaff = async () => {
-    const res = await fetch('/api/staff')
-    const data = await res.json()
-    setStaffList(data)
-  }
+    setLoading(true);
+    try {
+      const res = await fetch('/api/staff');
+      const data = await res.json();
+      setStaff(data);
+    } catch (err) {
+      console.error('Erro ao carregar funcionários:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetchStaff()
-  }, [])
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const method = editId ? 'PUT' : 'POST'
-    const url = editId ? `/api/staff/${editId}` : '/api/staff'
-    const res = await fetch(url, {
-      method,
-      body: JSON.stringify(form),
-      headers: { 'Content-Type': 'application/json' },
-    })
-
-    if (res.ok) {
-      fetchStaff()
-      setForm({ name: '', role: 'RECEPTION', contact: '' })
-      setEditId(null)
-    }
-  }
-
-  const handleEdit = (staff: any) => {
-    setForm({ name: staff.name, role: staff.role, contact: staff.contact || '' })
-    setEditId(staff.id)
-  }
-
-  const confirmDelete = (id: string) => {
-    setDeleteId(id)
-    setDeleteModalOpen(true)
-  }
+    fetchStaff();
+  }, []);
 
   const handleDelete = async () => {
-    if (!deleteId) return
-    const res = await fetch(`/api/staff/${deleteId}`, { method: 'DELETE' })
-    if (res.ok) {
-      fetchStaff()
-      setDeleteId(null)
-      setDeleteModalOpen(false)
+    if (!selectedStaff) return;
+    try {
+      const res = await fetch(`/api/staff/${selectedStaff.id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        setStaff((prev) => prev.filter((s) => s.id !== selectedStaff.id));
+        onDeleteClose();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Erro ao excluir funcionário');
+      }
+    } catch (err) {
+      console.error('Erro ao excluir funcionário:', err);
     }
-  }
+  };
+
+  const handleEdit = async () => {
+    if (!selectedStaff) return;
+    try {
+      const res = await fetch(`/api/staff/${selectedStaff.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm),
+      });
+
+      if (res.ok) {
+        fetchStaff();
+        onEditClose();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Erro ao salvar alterações');
+      }
+    } catch (err) {
+      console.error('Erro ao editar funcionário:', err);
+    }
+  };
+
+  const handleCreate = async () => {
+    try {
+      const res = await fetch('/api/staff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(createForm),
+      });
+
+      if (res.ok) {
+        fetchStaff();
+        setCreateForm({ name: '', email: '', role: '', phone: '' });
+        onCreateClose();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Erro ao criar funcionário');
+      }
+    } catch (err) {
+      console.error('Erro ao criar funcionário:', err);
+    }
+  };
+
+  const filteredStaff = staff.filter((s) =>
+    s.name.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
+  const columns = [
+    { key: 'name', label: 'Nome' },
+    { key: 'role', label: 'Função' },
+    { key: 'phone', label: 'Contato' },
+    { key: 'actions', label: 'Ações' },
+  ];
+
+  if (loading) return (
+    <div className="flex justify-center items-center h-64">
+      <Spinner size="lg" />
+    </div>
+  );
 
   return (
-    <div className="p-6 max-w-2xl mx-auto space-y-6">
-      <Card className="p-6 space-y-4">
-        <h2 className="text-lg font-semibold">
-          {editId ? 'Editar Funcionário' : 'Cadastrar Funcionário'}
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            placeholder="Nome"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
-          <Input
-            placeholder="Contato"
-            value={form.contact}
-            onChange={(e) => setForm({ ...form, contact: e.target.value })}
-          />
-          <Select
-            value={form.role}
-            onChange={(value) => setForm({ ...form, role: value })}
-            label="Função"
-          >
-            <SelectItem value="RECEPTION">Recepção</SelectItem>
-            <SelectItem value="CLEANING">Limpeza</SelectItem>
-            <SelectItem value="MAINTENANCE">Manutenção</SelectItem>
-            <SelectItem value="MANAGER">Gerente</SelectItem>
-          </Select>
-          <div className="flex gap-2">
-            <Button type="submit" className="w-full">
-              {editId ? 'Salvar' : 'Cadastrar'}
-            </Button>
-            {editId && (
-              <Button
-                className="w-full"
-                onClick={() => {
-                  setEditId(null)
-                  setForm({ name: '', role: 'RECEPTION', contact: '' })
-                }}
-              >
-                Cancelar
-              </Button>
-            )}
-          </div>
-        </form>
-      </Card>
-
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Funcionários</h3>
-        <div className="space-y-3">
-          {staffList.map((s) => (
-            <Card key={s.id} className="p-4 flex items-center justify-between">
-              <div>
-                <p className="font-medium">{s.name}</p>
-                <p className="text-sm text-gray-500">{s.role}</p>
-                {s.contact && <p className="text-sm text-gray-500">{s.contact}</p>}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" onClick={() => handleEdit(s)}>
-                  <Pencil className="w-4 h-4" />
-                </Button>
-                <Button
-                
-                  variant="ghost"
-                  onClick={() => confirmDelete(s.id)}
-                >
-                  <Trash2 className="w-4 h-4 text-red-600" />
-                </Button>
-              </div>
-            </Card>
-          ))}
+    <div className="max-w-6xl mx-auto mt-10 px-4">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold">Funcionários</h1>
+          <p className="text-gray-600">Gerencie os funcionários do hotel</p>
         </div>
+        <Button color="primary" startContent={<PlusIcon size={16} />} onClick={onCreateOpen}>
+          Novo Funcionário
+        </Button>
       </div>
 
-      <Modal isOpen={isDeleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <div className="p-6 space-y-4">
-          <h4 className="text-base font-medium">Confirmar Exclusão</h4>
-          <p className="text-sm text-gray-500">
-            Tem certeza que deseja excluir este funcionário?
-          </p>
-          <div className="flex justify-end gap-2">
-            <Button onClick={() => setDeleteModalOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleDelete}>
-              Excluir
-            </Button>
-          </div>
-        </div>
+      <Card className="mb-6">
+        <CardBody>
+          <Input
+            placeholder="Buscar funcionário por nome..."
+            startContent={<SearchIcon size={16} />}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="max-w-md"
+          />
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardBody>
+          <Table aria-label="Tabela de funcionários">
+            <TableHeader columns={columns}>
+              {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+            </TableHeader>
+            <TableBody
+              items={filteredStaff}
+              emptyContent="Nenhum funcionário encontrado"
+            >
+              {(item) => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <User
+                      name={item.name}
+                      description={item.email}
+                      avatarProps={{ name: item.name[0], size: 'sm' }}
+                    />
+                  </TableCell>
+                  <TableCell>{item.role || '—'}</TableCell>
+                  <TableCell>{item.phone || '—'}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        color="primary"
+                        onClick={() => {
+                          setSelectedStaff(item);
+                          setEditForm(item);
+                          onEditOpen();
+                        }}
+                      >
+                        <EditIcon size={16} />
+                      </Button>
+                      <Button
+                        isIconOnly
+                        size="sm"
+                        variant="light"
+                        color="danger"
+                        onClick={() => {
+                          setSelectedStaff(item);
+                          onDeleteOpen();
+                        }}
+                      >
+                        <TrashIcon size={16} />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardBody>
+      </Card>
+
+      {/* Modal de Criação */}
+      <Modal isOpen={isCreateOpen} onClose={onCreateClose} size="md" scrollBehavior="inside">
+        <ModalContent>
+          <ModalHeader>
+            <h3>Novo Funcionário</h3>
+          </ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <Input
+                label="Nome"
+                value={createForm.name || ''}
+                onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                isRequired
+              />
+              <Input
+                label="Email"
+                type="email"
+                value={createForm.email || ''}
+                onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+              />
+              <Input
+                label="Função"
+                value={createForm.role || ''}
+                onChange={(e) => setCreateForm({ ...createForm, role: e.target.value })}
+              />
+              <Input
+                label="Telefone"
+                value={createForm.phone || ''}
+                onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
+              />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onClick={onCreateClose}>Cancelar</Button>
+            <Button color="primary" onClick={handleCreate}>Salvar</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Modal de Edição */}
+      <Modal isOpen={isEditOpen} onClose={onEditClose} size="md" scrollBehavior="inside">
+        <ModalContent>
+          <ModalHeader>
+            <h3>Editar Funcionário</h3>
+          </ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <Input
+                label="Nome"
+                value={editForm.name || ''}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                isRequired
+              />
+              <Input
+                label="Email"
+                type="email"
+                value={editForm.email || ''}
+                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+              />
+              <Input
+                label="Função"
+                value={editForm.role || ''}
+                onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+              />
+              <Input
+                label="Telefone"
+                value={editForm.phone || ''}
+                onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+              />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onClick={onEditClose}>Cancelar</Button>
+            <Button color="primary" onClick={handleEdit}>Salvar</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Modal de Exclusão */}
+      <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
+        <ModalContent>
+          <ModalHeader>
+            <h3>Confirmar Exclusão</h3>
+          </ModalHeader>
+          <ModalBody>
+            <p>Tem certeza que deseja excluir o funcionário <strong>{selectedStaff?.name}</strong>?</p>
+            <p className="text-sm text-gray-600">Esta ação não pode ser desfeita.</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="light" onClick={onDeleteClose}>Cancelar</Button>
+            <Button color="danger" onClick={handleDelete}>Excluir</Button>
+          </ModalFooter>
+        </ModalContent>
       </Modal>
     </div>
-  )
+  );
 }

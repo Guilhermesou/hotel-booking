@@ -1,24 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { HomeIcon, UsersIcon, BedIcon, LogOutIcon, SunIcon, MoonIcon, WrenchIcon, BarChartIcon } from 'lucide-react'
-import { Button, Card } from '@heroui/react'
-import clsx from 'clsx'
-import { useTheme } from 'next-themes'
-import { ThemeSwitch } from '@/components/theme-switch'
 import Sidebar from '@/components/Sidebar'
-
-// const navItems = [
-//   { label: 'Dashboard', icon: HomeIcon, href: '/dashboard' },
-//   { label: 'Hóspedes', icon: UsersIcon, href: '/dashboard/guests' },
-//   { label: 'Quartos', icon: BedIcon, href: '/dashboard/rooms' },
-//   { label: 'Equipe - Escalas', icon: UsersIcon, href: '/dashboard/staff/shifts' },
-//   { label: 'Equipe - Tarefas', icon: UsersIcon, href: '/dashboard/staff/tasks' },
-//   { label: 'Manutenção', icon: WrenchIcon, href: '/dashboard/maintenance' },
-//   { label: 'Relatórios', icon: BarChartIcon, href: '/dashboard/reports' },
-// ]
-
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -29,7 +12,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Sidebar />
 
       {/* Conteúdo principal */}
-      <main className="flex-1 p-6 overflow-y-auto bg-background text-foreground">
+      <main className="flex-1 p-4 md:p-6 overflow-y-auto bg-background text-foreground md:ml-0">
+        {/* Espaçamento extra no topo para mobile (devido ao botão do menu) */}
+        <div className="md:hidden h-12"></div>
         {children}
       </main>
     </div>

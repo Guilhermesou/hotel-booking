@@ -65,6 +65,8 @@ model Guest {
   notes          String?         // Observações gerais do hóspede
   documents      GuestDocument[] // Relacionamento com documentos
   reservations   Reservation[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 model GuestDocument {
@@ -76,6 +78,7 @@ model GuestDocument {
   number      String   // Número do documento
   issuedAt    DateTime?
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum DocumentType {
@@ -87,19 +90,79 @@ enum DocumentType {
 }
 
 
+// model Room {
+//   id             Int       @id @default(autoincrement())
+//   number         String    @unique
+//   category       String
+//   status         RoomStatus
+//   pricePerNight  Decimal
+//   doubleBeds     Int       @default(0) // Camas de casal
+//   singleBeds     Int       @default(0) // Camas de solteiro
+//   capacity       Int       @default(1) // Quantidade de pessoas total
+//   reservations   Reservation[]
+//   maintenance    Maintenance[]
+//   createdAt      DateTime  @default(now())
+//   updatedAt      DateTime  @updatedAt
+// }
+
 model Room {
-  id             Int       @id @default(autoincrement())
-  number         String    @unique
-  category       String
-  status         RoomStatus
-  pricePerNight  Decimal
-  doubleBeds     Int       @default(0) // Camas de casal
-  singleBeds     Int       @default(0) // Camas de solteiro
-  capacity       Int       @default(1) // Quantidade de pessoas total
-  reservations   Reservation[]
-  maintenance    Maintenance[]
+  id Int @id @default(autoincrement())
+  number String @unique
+  category String
+  status RoomStatus
+  pricePerNight Decimal
+  
+  // Camas
+  doubleBeds Int @default(0) // Camas de casal
+  singleBeds Int @default(0) // Camas de solteiro
+  capacity Int @default(1) // Quantidade de pessoas total
+  
+  // Características físicas
+  area Decimal? // Área em m²
+  floor Int? // Andar do quarto
+  hasBalcony Boolean @default(false) // Se tem varanda
+  viewType String? // Tipo de vista (mar, cidade, jardim, etc.)
+  hasWindow Boolean @default(true) // Se tem janela
+  bathroomType String @default("private") // Tipo de banheiro (private, shared)
+  
+  // Comodidades e equipamentos
+  amenities String @default("")// Lista completa de comodidades e equipamentos (stored as JSON)
+  // Exemplos: '["air_conditioning", "tv", "minibar", "wifi", "safe", "desk"]'
+  // "closet", "phone", "hair_dryer", "iron", "coffee_maker", "kitchenette",
+  // "microwave", "refrigerator", "sofa", "jacuzzi", etc.
+  
+  // Gestão operacional
+  cleaningStatus CleaningStatus @default(CLEAN)
+  lastCleaned DateTime?
+  isActive Boolean @default(true) // Se o quarto está ativo para reservas
+  images String @default("") // URLs das fotos do quarto (stored as JSON)
+  notes String? // Observações internas
+  maintenanceNotes String? // Notas específicas de manutenção
+  lastInspection DateTime? // Última inspeção do quarto
+  inspectionStatus InspectionStatus @default(APPROVED)
+  
+  // Relacionamentos existentes
+  reservations Reservation[]
+  maintenance Maintenance[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
+enum CleaningStatus {
+  CLEAN
+  DIRTY
+  CLEANING
+  OUT_OF_ORDER
+  DEEP_CLEANING
+}
+
+enum InspectionStatus {
+  APPROVED
+  PENDING
+  FAILED
+  NOT_INSPECTED
+}
 
 enum RoomStatus {
   AVAILABLE
@@ -118,10 +181,11 @@ model Reservation {
   checkOut       DateTime
   status         ReservationStatus
   paymentStatus  PaymentStatus
-  channel        String    // Ex: DIRECT, BOOKING, AIRBNB
+  platform    ReservationPlatform @default(DIRECT)
   services       Service[]
   payments       Payment[]
   createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 enum ReservationStatus {
@@ -171,6 +235,8 @@ model Maintenance {
   description    String
   status         MaintenanceStatus
   scheduledDate  DateTime
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 enum MaintenanceStatus {
@@ -211,8 +277,21 @@ model Task {
   staff          Staff     @relation(fields: [staffId], references: [id])
   description    String
   status         TaskStatus
+  completedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
   dueDate        DateTime
 }
+
+
+enum ReservationPlatform {
+  DIRECT
+  BOOKING
+  AIRBNB
+  OTHER
+}
+
+
 
 enum TaskStatus {
   PENDING
