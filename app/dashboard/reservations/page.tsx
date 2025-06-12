@@ -24,13 +24,7 @@ export default function ReservationPage() {
           getGuests(),
         ])
         setRooms(roomsData)
-        const formattedReservations = reservationsData.map((res) => ({
-          ...res,
-          checkIn: parseISO(res.checkIn),
-          checkOut: parseISO(res.checkOut),
-        }));
-
-        setReservations(formattedReservations)
+        setReservations(reservationsData)
         setGuests(guestsData.guests)
       } catch (error) {
         console.error('Failed to fetch:', error)
@@ -40,21 +34,15 @@ export default function ReservationPage() {
     fetchData()
   }, [selectedHotel])
 
-  console.log("R -> ", rooms)
 
   return (
     <div className="p-6">
-      <ReservationForm
-        rooms={rooms}
-        guests={guests}
-        onSuccess={() => console.log('Reservation saved')}
-      />
       <ReservationCalendar
         rooms={rooms}
         reservations={reservations}
         startDate={startOfToday()}
         days={30}
-        // guests={guests} // Provide appropriate guests array
+        guests={guests} // Provide appropriate guests array
         onUpdated={() => { }} // Provide appropriate handler
       />
     </div>

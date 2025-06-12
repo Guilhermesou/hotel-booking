@@ -9,6 +9,7 @@ import {
 } from '@dnd-kit/core'
 import { Calendar, Hotel, User, Move } from 'lucide-react'
 import { Card, Avatar, Chip, Divider } from '@heroui/react'
+import ReservationForm from './ReservationForm'
 
 type Reservation = {
   id: number
@@ -20,16 +21,17 @@ type Reservation = {
   platform: string
 }
 
-type Room = {
-  id: number
-  name: string
-}
+// type Room = {
+//   id: number
+//   name: string
+// }
 
 type Props = {
   rooms: Room[]
   reservations: Reservation[]
   startDate: Date
   days: number
+  guests: any
   onUpdated: () => void
 }
 
@@ -39,7 +41,6 @@ const platformConfig = {
   vrbo: { label: 'VRBO', color: 'from-yellow-500 to-orange-500' },
   direct: { label: 'Direto', color: 'from-green-500 to-emerald-500' },
   other: { label: 'Outros', color: 'from-purple-500 to-indigo-500' },
-  default: { label: 'Outros', color: 'from-purple-500 to-indigo-500' },
 } as const
 
 const addDays = (date: Date, days: number): Date => {
@@ -76,7 +77,7 @@ const PlatformLegend = () => (
   </div>
 )
 
-export default function ReservationCalendar({ rooms, reservations, startDate, days, onUpdated }: Props) {
+export default function ReservationCalendar({ rooms, reservations, startDate, days, guests, onUpdated }: Props) {
   const dates = Array.from({ length: days }, (_, i) => addDays(startDate, i))
   const [activeId, setActiveId] = useState<number | null>(null)
   console.log("reservations -> ", reservations)
@@ -120,16 +121,23 @@ export default function ReservationCalendar({ rooms, reservations, startDate, da
   return (
     <div className="min-h-screen">
       <div className="mb-6">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 p-3">
-            <Calendar className="h-6 w-6 text-white" />
+        <div className="mb-4 flex items-center justify-between">
+          <div className='flex items-center gap-3'>
+            <div className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 p-3">
+              <Calendar className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="bg-clip-text text-3xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                Reservas
+              </h1>
+              <p className="text-sm text-gray-600">Gerencie suas reservas com facilidade</p>
+            </div>
           </div>
-          <div>
-            <h1 className="bg-clip-text text-3xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-              Calendário de Reservas
-            </h1>
-            <p className="text-sm text-gray-600">Gerencie suas reservas com facilidade</p>
-          </div>
+          <ReservationForm
+            rooms={rooms}
+            guests={guests}
+            onSuccess={() => console.log("Success!")}
+          />
         </div>
         <PlatformLegend />
       </div>
@@ -140,7 +148,9 @@ export default function ReservationCalendar({ rooms, reservations, startDate, da
         onDragEnd={handleDragEnd}
       >
         <Card className="shadow-2xl backdrop-blur-sm">
-          <div className="grid grid-cols-[12rem_repeat(var(--days),10rem)]" style={{ '--days': days } as React.CSSProperties}>
+          <div className="grid" style={{
+            gridTemplateColumns: `12rem repeat(${days}, 10rem)`,
+          }}>
             <div className="flex items-center gap-2 border-r p-4">
               <Hotel className="h-5 w-5" />
               <span className="font-semibold">Quartos</span>
@@ -156,44 +166,75 @@ export default function ReservationCalendar({ rooms, reservations, startDate, da
               </div>
             ))}
 
-            {rooms.map((room, roomIndex) => (
-              <div key={room.id} className="contents">
-                <div className="border-r border-slate-200 p-4 transition-colors hover:bg-slate-50/50">
-                  <div className="flex items-center gap-3">
-                    <Avatar
-                      size="sm"
-                      name={room.name}
-                      className="bg-gradient-to-r from-blue-500 to-purple-500 text-white"
-                    />
-                    <div>
-                      <p className="font-semibold">{room.name}</p>
-                      <p className="text-xs">Quarto {roomIndex + 1}</p>
+            {rooms.map((room, roomIndex) => {
+              const roomReservations = reservations.filter(r => r.roomId === room.id)
+
+              return (
+                <div key={room.id} className="contents">
+                  {/* Nome do quarto */}
+                  <div className="border-r border-slate-200 p-4">
+                    <div className="flex items-center gap-3">
+                      <Avatar size="sm" name={room.number} className="bg-gradient-to-r from-blue-500 to-purple-500 text-white" />
+                      <div>
+                        <p className="font-semibold">Quarto {room.number}</p>
+                        {/* <p className="text-xs">Quarto {roomIndex + 1}</p> */}
+                      </div>
                     </div>
                   </div>
-                </div>
-                {dates.map(date => {
-                  const dayKey = `${room.id}|${date.toISOString()}`
-                  const reservation = reservations.find(r =>
-                    r.roomId === room.id &&
-                    isWithinInterval(date, {
-                      start: parseISO(r.checkIn),
-                      end: addDays(parseISO(r.checkOut), -1),
-                    })
-                  )
 
-                  return (
-                    <div key={dayKey} className="min-h-[80px] border-r border-slate-200 p-2">
-                      <DroppableCell id={dayKey}>
-                        {reservation ? <DraggableReservation reservation={reservation} /> : null}
-                      </DroppableCell>
-                    </div>
-                  )
-                })}
-                {roomIndex < rooms.length - 1 && (
-                  <Divider className="col-span-full" />
-                )}
-              </div>
-            ))}
+                  {dates.map((date, dateIndex) => {
+                    const dayKey = `${room.id}|${date.toISOString()}`
+
+                    // Verifica se alguma reserva começa ou cobre este dia
+                    const reservation = roomReservations.find(r => {
+                      const checkIn = parseISO(r.checkIn)
+                      const checkOut = parseISO(r.checkOut)
+                      return date.getTime() >= checkIn.getTime() && date.getTime() < checkOut.getTime()
+                    })
+
+                    // Renderizar só no primeiro dia da reserva
+                    const isStartDate = reservation && parseISO(reservation.checkIn).toDateString() === date.toDateString()
+
+                    if (reservation && isStartDate) {
+                      const checkIn = parseISO(reservation.checkIn)
+                      const checkOut = parseISO(reservation.checkOut)
+
+                      const duration = Math.ceil(
+                        (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)
+                      )
+
+                      return (
+                        <div
+                          key={dayKey}
+                          className={`col-span-${duration} p-2`}
+                          style={{ gridColumn: `${dateIndex + 2} / span ${duration}` }}
+                        >
+                          <DroppableCell id={dayKey}>
+                            <DraggableReservation reservation={reservation} />
+                          </DroppableCell>
+                        </div>
+                      )
+                    }
+
+                    // Se o dia está dentro da reserva, mas não é o início, deixa a célula vazia (sem nada para não duplicar)
+                    if (reservation && !isStartDate) {
+                      return null // evita renderizar novamente
+                    }
+
+                    // Dia vazio
+                    return (
+                      <div key={dayKey} className="p-2">
+                        <DroppableCell id={dayKey} />
+                      </div>
+                    )
+                  })}
+
+
+                  {roomIndex < rooms.length - 1 && <Divider className="col-span-full" />}
+                </div>
+              )
+            })}
+
           </div>
         </Card>
       </DndContext>
@@ -208,17 +249,23 @@ function DraggableReservation({ reservation }: { reservation: Reservation }) {
 
   const style: React.CSSProperties = transform
     ? {
-        transform: `translate(${transform.x}px, ${transform.y}px)`,
-        position: 'relative',
-        zIndex: 50,
-      }
+      transform: `translate(${transform.x}px, ${transform.y}px)`,
+      position: 'relative',
+      zIndex: 50,
+    }
     : {}
 
-  const duration = Math.ceil(
-    (parseISO(reservation.checkOut).getTime() - parseISO(reservation.checkIn).getTime()) / (1000 * 60 * 60 * 24)
-  )
+  const checkIn = parseISO(reservation.checkIn)
+  const checkOut = parseISO(reservation.checkOut)
+  const duration = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
 
-  const platform = platformConfig[reservation.platform.toLowerCase() as keyof typeof platformConfig] || platformConfig.default
+  const platform = platformConfig[reservation.platform.toLowerCase() as keyof typeof platformConfig] || platformConfig.other
+
+  const roundedClass =
+    duration === 1 ? 'rounded-xl' : 'rounded-l-xl rounded-r-xl'
+
+  const formatDateTime = (date: Date) =>
+    date.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
 
   return (
     <Card
@@ -226,9 +273,9 @@ function DraggableReservation({ reservation }: { reservation: Reservation }) {
       {...listeners}
       {...attributes}
       style={style}
-      className={`shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 ${isDragging ? 'opacity-50 shadow-2xl' : ''} cursor-grab hover:cursor-grabbing`}
+      className={`shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-105 cursor-grab hover:cursor-grabbing ${isDragging ? 'opacity-50 shadow-2xl' : ''}`}
     >
-      <div className={`relative overflow-hidden p-3 bg-gradient-to-r ${platform.color}`}>
+      <div className={`relative overflow-hidden p-3 bg-gradient-to-r ${platform.color} ${roundedClass}`}>
         <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent" />
         <div className="relative z-10">
           <div className="mb-1 flex items-center gap-2">
@@ -237,22 +284,16 @@ function DraggableReservation({ reservation }: { reservation: Reservation }) {
               {reservation.guest.name}
             </span>
           </div>
-          <div className="flex items-center justify-between">
-            <Chip
-              size="sm"
-              variant="flat"
-              className="bg-white/20 text-xs text-white backdrop-blur-sm"
-            >
+
+          <p className="text-xs text-white/80">
+            {formatDateTime(checkIn)} → {formatDateTime(checkOut)}
+          </p>
+
+          <div className="mt-1 flex items-center justify-between">
+            <Chip size="sm" variant="flat" className="bg-white/20 text-xs text-white backdrop-blur-sm">
               {duration} dia{duration > 1 ? 's' : ''}
             </Chip>
-            <Move className="h-3 w-3 text-white/60" />
-          </div>
-          <div className="mt-1">
-            <Chip
-              size="sm"
-              variant="flat"
-              className="bg-white/30 text-xs text-white backdrop-blur-sm"
-            >
+            <Chip size="sm" variant="flat" className="bg-white/30 text-xs text-white backdrop-blur-sm">
               {platform.label}
             </Chip>
           </div>

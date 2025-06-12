@@ -3,6 +3,7 @@
 import { Button } from '@heroui/button';
 import { Input } from '@heroui/input';
 import { useDisclosure, Modal, ModalContent, ModalHeader, ModalBody, Select, SelectItem, ModalFooter } from '@heroui/react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react'
 
 type ReservationFormProps = {
@@ -57,74 +58,75 @@ export default function ReservationForm({ rooms, guests, onSuccess }: Reservatio
   return (
     <>
       <Button color="primary" onPress={onOpen}>
+        <Plus className="w-4 h-4 mr-2" />
         Nova reserva
       </Button>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
-              <ModalHeader>Criar reserva</ModalHeader>
-              <ModalBody className="space-y-4">
-                <Select
-                  label="Quarto"
-                  placeholder="Selecione um quarto"
-                  selectedKeys={[form.roomId]}
-                  onChange={e => handleChange('roomId', e.target.value)}
-                >
-                  {rooms?.map(room => (
-                    <SelectItem key={"Quarto " + room.id}>
-                      {"Quarto " + room.number}
-                    </SelectItem>
-                  ))}
-                </Select>
+          <ModalHeader>Criar reserva</ModalHeader>
+          <ModalBody className="space-y-4">
+            <Select
+              label="Quarto"
+              placeholder="Selecione um quarto"
+              selectedKeys={[form.roomId]}
+              onChange={e => handleChange('roomId', e.target.value)}
+            >
+              {rooms?.map(room => (
+                <SelectItem key={"Quarto " + room.id}>
+                  {"Quarto " + room.number}
+                </SelectItem>
+              ))}
+            </Select>
 
-                <Select
-                  label="Hóspede"
-                  placeholder="Selectione um hóspede"
-                  selectedKeys={[form.guestId]}
-                  onChange={e => handleChange('guestId', e.target.value)}
-                >
-                  {guests?.map(guest => (
-                    <SelectItem key={guest.id}>
-                      {guest.name}
-                    </SelectItem>
-                  ))}
-                </Select>
+            <Select
+              label="Hóspede"
+              placeholder="Selectione um hóspede"
+              selectedKeys={[form.guestId]}
+              onChange={e => handleChange('guestId', e.target.value)}
+            >
+              {guests?.map(guest => (
+                <SelectItem key={guest.id}>
+                  {guest.name}
+                </SelectItem>
+              ))}
+            </Select>
 
-                <Input
-                  type="date"
-                  label="Check-in"
-                  value={form.checkIn}
-                  onChange={e => handleChange('checkIn', e.target.value)}
-                />
-                <Input
-                  type="date"
-                  label="Check-out"
-                  value={form.checkOut}
-                  onChange={e => handleChange('checkOut', e.target.value)}
-                />
+            <Input
+              type="date"
+              label="Check-in"
+              value={form.checkIn}
+              onChange={e => handleChange('checkIn', e.target.value)}
+            />
+            <Input
+              type="date"
+              label="Check-out"
+              value={form.checkOut}
+              onChange={e => handleChange('checkOut', e.target.value)}
+            />
 
-                <Select
-                  label="Platform"
-                  selectedKeys={[form.platform]}
-                  onChange={e => handleChange('platform', e.target.value)}
-                >
-                  <SelectItem key="DIRECT">Direct</SelectItem>
-                  <SelectItem key="BOOKING">Booking</SelectItem>
-                  <SelectItem key="AIRBNB">Airbnb</SelectItem>
-                  <SelectItem key="OTHER">Other</SelectItem>
-                </Select>
+            <Select
+              label="Platform"
+              selectedKeys={[form.platform]}
+              onChange={e => handleChange('platform', e.target.value)}
+            >
+              <SelectItem key="DIRECT">Direct</SelectItem>
+              <SelectItem key="BOOKING">Booking</SelectItem>
+              <SelectItem key="AIRBNB">Airbnb</SelectItem>
+              <SelectItem key="OTHER">Other</SelectItem>
+            </Select>
 
-                {error && <p className="text-danger text-sm">{error}</p>}
-              </ModalBody>
+            {error && <p className="text-danger text-sm">{error}</p>}
+          </ModalBody>
 
-              <ModalFooter>
-                <Button variant="light" onPress={onOpenChange}>
-                  Cancel
-                </Button>
-                <Button color="primary" onPress={handleSubmit}>
-                  Save
-                </Button>
-              </ModalFooter>
+          <ModalFooter>
+            <Button variant="light" onPress={onOpenChange}>
+              Cancel
+            </Button>
+            <Button color="primary" onPress={handleSubmit}>
+              Save
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

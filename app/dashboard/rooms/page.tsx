@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Bed, Plus } from 'lucide-react'
 import { ModalContent } from '@heroui/react'
 import { Button } from '@heroui/button'
 import { Input } from '@heroui/input'
@@ -83,7 +83,17 @@ export default function RoomsPage() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Quartos</h2>
+        <div className='flex items-center gap-3'>
+            <div className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 p-3">
+              <Bed className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="bg-clip-text text-3xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                Quartos
+              </h1>
+              <p className="text-sm text-gray-600">Gerencie seus quartos</p>
+            </div>
+          </div>
         <Button
           color='primary'
           onPress={() => {
