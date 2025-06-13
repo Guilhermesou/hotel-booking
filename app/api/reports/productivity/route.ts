@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
-import { Staff } from "@prisma/client";
 
 type TaskGroup = {
   staffId: number;
