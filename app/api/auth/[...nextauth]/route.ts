@@ -57,6 +57,7 @@ const authOptions = {
         session.user.role = token.role as string;
         session.user.hotelId = token.hotelId as number;
       }
+
       return session;
     },
     async jwt({ token, user }: { token: any; user?: any }) {
@@ -64,6 +65,7 @@ const authOptions = {
         token.role = user.role;
         token.hotelId = user.hotelId;
       }
+
       return token;
     },
   },

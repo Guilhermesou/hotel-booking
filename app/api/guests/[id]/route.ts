@@ -351,7 +351,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const activeReservations = existingGuest.reservations.filter(
-      (r) => r.status === "CONFIRMED" || r.status === "CHECKED_IN",
+      (r: any) => r.status === "CONFIRMED" || r.status === "CHECKED_IN",
     );
 
     if (activeReservations.length > 0) {
