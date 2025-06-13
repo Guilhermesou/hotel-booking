@@ -81,7 +81,7 @@ export default function Sidebar() {
       size="sm"
       variant="light"
       className="md:hidden fixed top-4 left-4 z-50 bg-content1 shadow-md"
-      onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      onPress={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
     >
       {isMobileMenuOpen ? <XIcon size={20} /> : <MenuIcon size={20} />}
     </Button>
@@ -138,12 +138,11 @@ export default function Sidebar() {
             </Tooltip>
           ))}
 
-          {/* Equipe */}
           <div>
             <Button
               variant="light"
               color="default"
-              onClick={() => toggleGroup('staff')}
+              onPress={() => toggleGroup('staff')}
               startContent={<UsersIcon className="text-lime-500" size={18} />}
               endContent={
                 (!isCollapsed || isMobile) && (

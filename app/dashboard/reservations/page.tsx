@@ -40,7 +40,7 @@ export default function ReservationPage() {
       <ReservationCalendar
         rooms={rooms}
         reservations={reservations}
-        startDate={startOfToday()}
+        startDate={new Date(startOfToday().setDate(startOfToday().getDate() - 1))}
         days={30}
         guests={guests} // Provide appropriate guests array
         onUpdated={() => { }} // Provide appropriate handler
