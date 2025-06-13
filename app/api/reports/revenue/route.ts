@@ -44,7 +44,7 @@ export async function GET(req: Request) {
 
     // Receita por dia
     const revenueEntries = await Promise.all(
-      reservations.map(async (reservation) => {
+      reservations.map(async (reservation: Reservation) => {
         const date = new Date(reservation.checkOut).toISOString().split("T")[0];
 
         const nights = Math.ceil(
@@ -66,7 +66,10 @@ export async function GET(req: Request) {
     );
 
     // Agrupar os resultados em um Record<string, number>
-    const revenueByDay = revenueEntries.reduce<Record<string, number>>((acc, entry) => {
+    const revenueByDay = revenueEntries.reduce<Record<string, number>>((acc, entry: {
+      date: string;
+      revenue: number;
+    } | null) => {
       if (!entry) return acc;
 
       const { date, revenue } = entry;
@@ -79,7 +82,7 @@ export async function GET(req: Request) {
 
     // ADR (Average Daily Rate) e RevPAR (Revenue Per Available Room)
     const totalRooms = await prisma.room.count();
-    const totalNights = reservations.reduce((sum, reservation) => {
+    const totalNights = reservations.reduce((sum: number, reservation: Reservation) => {
       return (
         sum +
         Math.ceil(
