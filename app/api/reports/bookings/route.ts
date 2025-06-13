@@ -71,8 +71,8 @@ export async function GET(req: Request) {
       select: { id: true, category: true },
     });
 
-    const bookingsByCategory = bookingsByRoomCategory.map((booking) => {
-      const room = roomCategories.find((r: any) => r.id === booking.roomId);
+    const bookingsByCategory = bookingsByRoomCategory.map((booking: { roomId: number; _count: { id: number } }) => {
+      const room = roomCategories.find((r: { id: number}) => r.id === booking.roomId);
 
       return {
         category: room?.category || "Desconhecido",
