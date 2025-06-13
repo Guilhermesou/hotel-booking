@@ -66,7 +66,7 @@ export async function GET(req: Request) {
 
     const roomCategories = await prisma.room.findMany({
       where: {
-        id: { in: bookingsByRoomCategory.map((b: any) => b.roomId) },
+       id: { in: bookingsByRoomCategory.map((b: { roomId: number }) => b.roomId) },
       },
       select: { id: true, category: true },
     });
