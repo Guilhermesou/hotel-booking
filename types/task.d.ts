@@ -9,4 +9,10 @@ type Task = {
     dueDate: Date;
 }
 
-type TaskStatus = "COMPLETED" | "PENDING" | "IN_PROGRESS"
+// type TaskStatus = "COMPLETED" | "PENDING" | "IN_PROGRESS"
+// schema.prisma
+enum TaskStatus {
+  PENDING = "PENDING",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+}
