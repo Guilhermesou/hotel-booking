@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 
-// Import TaskStatus enum or define it if not already imported
-import { TaskStatus } from "@prisma/client";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
