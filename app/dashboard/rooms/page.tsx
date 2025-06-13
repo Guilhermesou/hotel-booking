@@ -36,15 +36,15 @@ export default function RoomsPage() {
     // add other properties if needed
   }
 
-  interface FormData {
-    number: string;
-    category: string;
-    status: string;
-    pricePerNight: number;
-    doubleBeds: number;
-    singleBeds: number;
-    capacity: number;
-  }
+  // interface FormData {
+  //   number: string;
+  //   category: string;
+  //   status: string;
+  //   pricePerNight: number;
+  //   doubleBeds: number;
+  //   singleBeds: number;
+  //   capacity: number;
+  // }
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
@@ -80,14 +80,14 @@ export default function RoomsPage() {
     setIsModalOpen(false);
   };
 
-  const statusMap: Record<
-    string,
-    { label: string; variant: "shadow" | "solid" | "flat" | "faded" }
-  > = {
-    AVAILABLE: { label: "Disponível", variant: "solid" },
-    OCCUPIED: { label: "Ocupado", variant: "faded" },
-    MAINTENANCE: { label: "Manutenção", variant: "flat" },
-  };
+  // const statusMap: Record<
+  //   string,
+  //   { label: string; variant: "shadow" | "solid" | "flat" | "faded" }
+  // > = {
+  //   AVAILABLE: { label: "Disponível", variant: "solid" },
+  //   OCCUPIED: { label: "Ocupado", variant: "faded" },
+  //   MAINTENANCE: { label: "Manutenção", variant: "flat" },
+  // };
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">

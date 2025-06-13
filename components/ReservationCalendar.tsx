@@ -86,7 +86,7 @@ export default function ReservationCalendar({
   onUpdated,
 }: Props) {
   const dates = Array.from({ length: days }, (_, i) => addDays(startDate, i));
-  const [activeId, setActiveId] = useState<number | null>(null);
+  const [_, setActiveId] = useState<number | null>(null);
 
   const handleDragEnd = useCallback(
     async (event: any) => {
@@ -229,12 +229,12 @@ export default function ReservationCalendar({
                     );
 
                     // Verifica se alguma reserva está ativa neste dia (para células ocupadas)
-                    const hasActiveReservation = roomReservations.some((r) => {
-                      const checkIn = parseISO(r.checkIn);
-                      const checkOut = parseISO(r.checkOut);
+                    // const hasActiveReservation = roomReservations.some((r) => {
+                    //   const checkIn = parseISO(r.checkIn);
+                    //   const checkOut = parseISO(r.checkOut);
 
-                      return date >= checkIn && date < checkOut;
-                    });
+                    //   return date >= checkIn && date < checkOut;
+                    // });
 
                     console.log(
                       `Room ${room.number}, Date ${date.toDateString()}:`,

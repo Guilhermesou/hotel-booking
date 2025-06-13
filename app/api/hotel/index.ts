@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     address,
     phone,
     email,
-    admin: { password, name: adminName, email: adminEmail },
+    // admin: { password, name: adminName, email: adminEmail },
   } = await request.json();
 
   const hotel = await registerHotelWithAdmin(

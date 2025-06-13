@@ -358,7 +358,7 @@ const Dashboard = () => {
                   outerRadius={80}
                 >
                   {(data.bookings?.bookingsByStatus || []).map(
-                    (entry, index) => (
+                    (_, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
@@ -487,7 +487,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardBody>
             <div className="space-y-2">
-              {data.guests?.topGuests?.slice(0, 5).map((guest, index) => (
+              {data.guests?.topGuests?.slice(0, 5).map((guest) => (
                 <div
                   key={guest.id}
                   className="flex justify-between items-center py-1"

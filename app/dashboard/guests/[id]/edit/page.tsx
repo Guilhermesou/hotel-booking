@@ -6,13 +6,13 @@ import { Button, Spinner } from "@heroui/react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-const documentTypes = [
-  { key: "CPF", label: "CPF" },
-  { key: "RG", label: "RG" },
-  { key: "PASSPORT", label: "Passaporte" },
-  { key: "CNH", label: "CNH" },
-  { key: "OTHER", label: "Outro" },
-];
+// const documentTypes = [
+//   { key: "CPF", label: "CPF" },
+//   { key: "RG", label: "RG" },
+//   { key: "PASSPORT", label: "Passaporte" },
+//   { key: "CNH", label: "CNH" },
+//   { key: "OTHER", label: "Outro" },
+// ];
 
 interface GuestDocument {
   id: number;
@@ -43,8 +43,8 @@ export default function EditGuestPage() {
 
   const [guest, setGuest] = useState<Guest | null>(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState({
+  // const [saving, setSaving] = useState(false);
+  const [_, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
@@ -53,7 +53,7 @@ export default function EditGuestPage() {
     preferences: "",
     notes: "",
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  // const [_, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetchGuest();
@@ -89,70 +89,70 @@ export default function EditGuestPage() {
     }
   }
 
-  function isValidEmail(email: string) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // function isValidEmail(email: string) {
+  //   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    return regex.test(email);
-  }
+  //   return regex.test(email);
+  // }
 
-  function validateForm() {
-    const newErrors: Record<string, string> = {};
+  // function validateForm() {
+  //   const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) newErrors.name = "Nome é obrigatório";
-    if (!formData.phone.trim()) newErrors.phone = "Telefone é obrigatório";
-    if (!formData.documentType)
-      newErrors.documentType = "Tipo de documento é obrigatório";
-    if (!formData.documentNumber.trim())
-      newErrors.documentNumber = "Número do documento é obrigatório";
-    if (formData.email && !isValidEmail(formData.email))
-      newErrors.email = "Email inválido";
+  //   if (!formData.name.trim()) newErrors.name = "Nome é obrigatório";
+  //   if (!formData.phone.trim()) newErrors.phone = "Telefone é obrigatório";
+  //   if (!formData.documentType)
+  //     newErrors.documentType = "Tipo de documento é obrigatório";
+  //   if (!formData.documentNumber.trim())
+  //     newErrors.documentNumber = "Número do documento é obrigatório";
+  //   if (formData.email && !isValidEmail(formData.email))
+  //     newErrors.email = "Email inválido";
 
-    setErrors(newErrors);
+  //   setErrors(newErrors);
 
-    return Object.keys(newErrors).length === 0;
-  }
+  //   return Object.keys(newErrors).length === 0;
+  // }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!validateForm()) return;
+  // async function handleSubmit(e: React.FormEvent) {
+  //   e.preventDefault();
+  //   if (!validateForm()) return;
 
-    setSaving(true);
-    try {
-      const response = await fetch(`/api/guests/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          email: formData.email || null,
-          preferences: formData.preferences || null,
-          notes: formData.notes || null,
-        }),
-      });
-      const data = await response.json();
+  //   // setSaving(true);
+  //   try {
+  //     const response = await fetch(`/api/guests/${id}`, {
+  //       method: "PUT",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         ...formData,
+  //         email: formData.email || null,
+  //         preferences: formData.preferences || null,
+  //         notes: formData.notes || null,
+  //       }),
+  //     });
+  //     const data = await response.json();
 
-      if (response.ok) {
-        router.push("/dashboard/guests");
-      } else {
-        if (data.error && data.error.includes("documento")) {
-          setErrors({ documentNumber: data.error });
-        } else {
-          alert(data.error || "Erro ao atualizar hóspede");
-        }
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar hóspede:", error);
-      alert("Erro ao atualizar hóspede");
-    } finally {
-      setSaving(false);
-    }
-  }
+  //     if (response.ok) {
+  //       router.push("/dashboard/guests");
+  //     } else {
+  //       if (data.error && data.error.includes("documento")) {
+  //         setErrors({ documentNumber: data.error });
+  //       } else {
+  //         alert(data.error || "Erro ao atualizar hóspede");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Erro ao atualizar hóspede:", error);
+  //     alert("Erro ao atualizar hóspede");
+  //   } finally {
+  //     // setSaving(false);
+  //   }
+  // }
 
-  function handleInputChange(field: string, value: string) {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
-    }
-  }
+  // function handleInputChange(field: string, value: string) {
+  //   setFormData((prev) => ({ ...prev, [field]: value }));
+  //   if (errors[field]) {
+  //     setErrors((prev) => ({ ...prev, [field]: "" }));
+  //   }
+  // }
 
   if (loading && !guest) {
     return (

@@ -3,15 +3,13 @@ import { signIn } from "next-auth/react"; // ⬅️ importe aqui
 import { useState } from "react";
 import { Input, Button, Card } from "@heroui/react";
 
-import { useHotelStore } from "@/stores/useHotelStore";
-
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const { setSelectedHotel } = useHotelStore();
+  // const { setSelectedHotel } = useHotelStore();
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");

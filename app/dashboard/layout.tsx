@@ -1,7 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-
 import Sidebar from "@/components/Sidebar";
 
 export default function DashboardLayout({
@@ -9,8 +7,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       {/* Sidebar */}
