@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
@@ -16,23 +16,26 @@ const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("credentials", credentials);
         if (!credentials?.email || !credentials.password) {
-          throw new Error("Missing credentials");
+          throw new Error("Email e senha são obrigatórios.");
         }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
 
-        if (!user) throw new Error("User not found");
+        if (!user || !user.passwordHash) {
+          throw new Error("Usuário não encontrado.");
+        }
 
         const isValid = await bcrypt.compare(
           credentials.password,
-          user.passwordHash,
+          user.passwordHash
         );
 
-        if (!isValid) throw new Error("Invalid password");
+        if (!isValid) {
+          throw new Error("Senha inválida.");
+        }
 
         return {
           id: user.id.toString(),
@@ -44,23 +47,28 @@ const authOptions = {
       },
     }),
   ],
-  session: { strategy: "jwt" as const },
+  session: {
+    strategy: "jwt" as const,
+  },
   callbacks: {
     async session({ session, token }: { session: any; token: any }) {
-      session.user.id = parseInt(token.sub || "0");
-      session.user.role = token.role as string;
-      session.user.hotelId = token.hotelId as number;
-
+      if (session.user && token) {
+        session.user.id = parseInt(token.sub || "0");
+        session.user.role = token.role as string;
+        session.user.hotelId = token.hotelId as number;
+      }
       return session;
     },
     async jwt({ token, user }: { token: any; user?: any }) {
       if (user) {
-        token.role = (user as any).role;
-        token.hotelId = (user as any).hotelId;
+        token.role = user.role;
+        token.hotelId = user.hotelId;
       }
-
       return token;
     },
+  },
+  pages: {
+    signIn: "/login", // opcional, redireciona para sua página de login
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
