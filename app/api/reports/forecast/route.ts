@@ -24,15 +24,15 @@ export async function GET() {
     });
 
     // Receita prevista
-    const projectedRevenue = upcomingReservations.reduce((sum, reservation) => {
+    const projectedRevenue = upcomingReservations.reduce((sum: number, reservation) => {
       const nights = Math.ceil(
-        (new Date(reservation.checkOut).getTime() -
-          new Date(reservation.checkIn).getTime()) /
-          (1000 * 60 * 60 * 24),
-      );
+        new Date(reservation.checkOut).getTime() -
+        new Date(reservation.checkIn).getTime()
+      ) / (1000 * 60 * 60 * 24);
 
-      return sum + Number(reservation.room.pricePerNight) * nights;
+      return sum + Number(nights) * Number(reservation.room.pricePerNight);
     }, 0);
+
 
     // Taxa de ocupação por dia nos próximos 30 dias
     const totalRooms = await prisma.room.count();
