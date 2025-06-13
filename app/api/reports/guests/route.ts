@@ -107,10 +107,9 @@ export async function GET() {
       activeGuests,
       newGuests,
       recurringGuests: Number((recurringGuests as any)[0]?.count || 0),
-      topGuests: topGuests.map((guest) => ({
+      topGuests: topGuests.map((guest: Guest) => ({
         id: guest.id,
         name: guest.name,
-        reservationCount: guest._count.reservations,
       })),
       guestsByCountry, // será um array vazio se não implementado
     });
