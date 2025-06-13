@@ -41,7 +41,7 @@ export async function GET() {
 
     const averageResolutionTime =
       completedTasks.length > 0
-        ? completedTasks.reduce((sum, task) => {
+        ? completedTasks.reduce((sum: number, task) => {
             const resolutionTime =
               new Date(task.completedAt!).getTime() -
               new Date(task.createdAt).getTime();
