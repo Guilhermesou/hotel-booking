@@ -41,16 +41,18 @@ export async function GET() {
 
     const averageResolutionTime =
       completedTasks.length > 0
-        ? completedTasks.reduce((sum: number, task) => {
-            const resolutionTime =
-              new Date(task.completedAt!).getTime() -
-              new Date(task.createdAt).getTime();
-
-            return sum + resolutionTime;
-          }, 0) /
-          completedTasks.length /
-          (1000 * 60 * 60) // em horas
+        ? completedTasks.reduce((sum: number, task: { completedAt: Date | null; createdAt: Date | null }
+        ) => {
+          if (!task.completedAt || !task.createdAt) return sum;
+          const resolutionTime =
+            new Date(task.completedAt).getTime() -
+            new Date(task.createdAt).getTime();
+          return sum + resolutionTime;
+        }, 0) /
+        completedTasks.length /
+        (1000 * 60 * 60) // em horas
         : 0;
+
 
     // Tarefas por categoria - removido temporariamente
     // const tasksByCategory = [];

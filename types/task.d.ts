@@ -2,7 +2,7 @@ type Task = {
     id: number;
     createdAt: Date;
     updatedAt: Date;
-    status: $Enums.TaskStatus;
+    status: TaskStatus;
     description: string;
     staffId: number;
     completedAt: Date | null;
