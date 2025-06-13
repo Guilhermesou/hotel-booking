@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { TaskStatus } from '@prisma/client'
 import { NextResponse } from 'next/server'
 
 export async function GET(req: Request) {
@@ -7,7 +8,7 @@ export async function GET(req: Request) {
   const end = url.searchParams.get('endDate')
 
   const where = {
-    status: 'COMPLETED',
+    status: TaskStatus.COMPLETED,
     ...(start && end && {
       dueDate: {
         gte: new Date(start),

@@ -189,7 +189,7 @@ export default function NewGuestPage() {
                   isRequired
                 >
                   {documentTypes.map((type) => (
-                    <SelectItem key={type.key} value={type.key}>
+                    <SelectItem key={type.key}>
                       {type.label}
                     </SelectItem>
                   ))}

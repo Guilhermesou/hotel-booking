@@ -52,7 +52,7 @@ export async function GET(req: Request) {
 
     // Reservas por categoria de quarto
     const bookingsByRoomCategory = await prisma.reservation.groupBy({
-      by: ['room', 'roomId'],
+      by: ['roomId'],
       where: {
         createdAt: {
           gte: startDate,

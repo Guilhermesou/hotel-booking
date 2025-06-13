@@ -3,7 +3,14 @@
 import { useEffect, useState } from 'react';
 
 export default function TasksPage() {
-    const [tasks, setTasks] = useState([]);
+    type Task = {
+        id: number;
+        staff: { id: number; name: string };
+        description: string;
+        dueDate: string;
+        status: string;
+    };
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [staffList, setStaffList] = useState([]);
     const [form, setForm] = useState({
         staffId: '',

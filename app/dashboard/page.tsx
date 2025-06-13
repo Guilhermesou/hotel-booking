@@ -9,7 +9,7 @@ import { DollarSign, Users, Bed, Wrench, TrendingUp, Calendar, AlertTriangle, Ch
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('30');
-  const [data, setData] = useState({
+  const [data, setData] = useState<DashboardData>({
     occupancy: null,
     revenue: null,
     bookings: null,
@@ -70,7 +70,78 @@ const Dashboard = () => {
     fetchData();
   }, [period]);
 
-  const formatCurrency = (value) => {
+  interface OccupancyData {
+    occupancyRate: number;
+    occupied: number;
+    total: number;
+  }
+
+  interface RevenueByDay {
+    date: string;
+    revenue: number;
+  }
+
+  interface RevenueData {
+    totalRevenue: number;
+    adr: number;
+    revpar: number;
+    averageStayLength: number;
+    revenueByDay: RevenueByDay[];
+  }
+
+  interface BookingStatus {
+    status: string;
+    "_count.id": number;
+  }
+
+  interface BookingsData {
+    bookingsByStatus: BookingStatus[];
+    cancellationRate: number;
+  }
+
+  interface GuestsData {
+    activeGuests: number;
+    newGuests: number;
+    recurringGuests: number;
+    topGuests: {
+      id: string | number;
+      name: string;
+      reservationCount: number;
+    }[];
+  }
+
+  interface MaintenanceData {
+    pendingTasks: number;
+    overdueTasks: number;
+    roomsInMaintenance: number;
+  }
+
+  interface ForecastDay {
+    date: string;
+    occupancyRate: number;
+  }
+
+  interface ForecastData {
+    occupancyByDay: ForecastDay[];
+    projectedRevenue: number;
+  }
+
+  interface StaffPerformanceData {
+    name: string;
+    completedTasks: number;
+  }
+
+  interface DashboardData {
+    occupancy: OccupancyData | null;
+    revenue: RevenueData | null;
+    bookings: BookingsData | null;
+    guests: GuestsData | null;
+    maintenance: MaintenanceData | null;
+    forecast: ForecastData | null;
+    staffPerformance: StaffPerformanceData[] | null;
+  }
+
+  const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
@@ -98,7 +169,7 @@ const Dashboard = () => {
         <Select
           label="Período"
           selectedKeys={[period]}
-          onSelectionChange={(keys) => setPeriod(Array.from(keys)[0])}
+          onSelectionChange={(keys) => setPeriod(String(Array.from(keys)[0]))}
           className="max-w-xs"
         >
           <SelectItem key="7">Últimos 7 dias</SelectItem>
@@ -183,7 +254,7 @@ const Dashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Tooltip formatter={(value) => formatCurrency(value)} />
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                 <Line type="monotone" dataKey="revenue" stroke="#8884d8" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
@@ -201,7 +272,7 @@ const Dashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Tooltip formatter={(value) => `${value.toFixed(1)}%`} />
+                <Tooltip formatter={(value) => `${Number(value).toFixed(1)}%`} />
                 <Line type="monotone" dataKey="occupancyRate" stroke="#82ca9d" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
@@ -296,22 +367,22 @@ const Dashboard = () => {
             </h3>
           </CardHeader>
           <CardBody className="space-y-3">
-            {data.maintenance?.overdueTasks > 0 && (
+            {(data.maintenance?.overdueTasks ?? 0) > 0 && (
               <div className="flex items-center gap-2 p-2 bg-red-50 rounded-lg">
                 <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                <span className="text-sm">{data.maintenance.overdueTasks} tarefas de manutenção atrasadas</span>
+                <span className="text-sm">{data.maintenance?.overdueTasks ?? 0} tarefas de manutenção atrasadas</span>
               </div>
             )}
-            {data.maintenance?.roomsInMaintenance > 0 && (
+            {(data.maintenance?.roomsInMaintenance ?? 0) > 0 && (
               <div className="flex items-center gap-2 p-2 bg-yellow-50 rounded-lg">
                 <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                <span className="text-sm">{data.maintenance.roomsInMaintenance} quartos em manutenção</span>
+                <span className="text-sm">{data.maintenance?.roomsInMaintenance ?? 0} quartos em manutenção</span>
               </div>
             )}
-            {data.bookings?.cancellationRate > 10 && (
+            {(data.bookings?.cancellationRate ?? 0) > 10 && (
               <div className="flex items-center gap-2 p-2 bg-orange-50 rounded-lg">
                 <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span className="text-sm">Taxa de cancelamento alta: {data.bookings.cancellationRate}%</span>
+                <span className="text-sm">Taxa de cancelamento alta: {data.bookings?.cancellationRate ?? 0}%</span>
               </div>
             )}
           </CardBody>

@@ -40,15 +40,15 @@ const authOptions = {
       }
     })
   ],
-  session: { strategy: 'jwt' },
+  session: { strategy: "jwt" as const },
   callbacks: {
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       session.user.id = parseInt(token.sub || '0')
       session.user.role = token.role as string
       session.user.hotelId = token.hotelId as number
       return session
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user?: any }) {
       if (user) {
         token.role = (user as any).role
         token.hotelId = (user as any).hotelId

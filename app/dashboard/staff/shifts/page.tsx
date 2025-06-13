@@ -111,7 +111,7 @@ export default function ShiftsPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <Select
               value={form.staffId}
-              onChange={(value) => setForm({ ...form, staffId: value })}
+              onChange={(e) => setForm({ ...form, staffId: (e.target as HTMLSelectElement).value })}
             >
               <SelectItem>Selecione o funcionário</SelectItem>
               <>
