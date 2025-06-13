@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { Reservation } from "@prisma/client";
 
 export async function GET() {
   try {
@@ -49,7 +50,7 @@ export async function GET() {
 
       date.setDate(today.getDate() + i);
 
-      const occupiedRooms = upcomingReservations.filter((reservation) => {
+      const occupiedRooms = upcomingReservations.filter((reservation: Reservation) => {
         const checkIn = new Date(reservation.checkIn);
         const checkOut = new Date(reservation.checkOut);
 
