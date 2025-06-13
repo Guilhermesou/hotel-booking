@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { Staff } from "@prisma/client";
 
-
+type TaskGroup = {
+  staffId: number;
+  _count: { id: number };
+};
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const start = url.searchParams.get("startDate");
@@ -27,12 +31,12 @@ export async function GET(req: Request) {
 
   const staff = await prisma.staff.findMany({
     where: {
-      id: { in: tasks.map((t) => t.staffId) },
+      id: { in: tasks.map((t: TaskGroup) => t.staffId) },
     },
   });
 
-  const result = tasks.map((task) => {
-    const staffMember = staff.find((s) => s.id === task.staffId);
+  const result = tasks.map((task: TaskGroup) => {
+    const staffMember = staff.find((s: Staff) => s.id === task.staffId);
 
     return {
       staffId: task.staffId,
