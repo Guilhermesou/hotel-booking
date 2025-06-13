@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
+import { Reservation } from "@prisma/client";
 
 export async function GET() {
   try {
@@ -24,14 +25,20 @@ export async function GET() {
     });
 
     // Receita prevista
-    const projectedRevenue = upcomingReservations.reduce((sum: number, reservation) => {
+    let projectedRevenue = 0;
+    for (const reservation of upcomingReservations) {
       const nights = Math.ceil(
-        new Date(reservation.checkOut).getTime() -
-        new Date(reservation.checkIn).getTime()
-      ) / (1000 * 60 * 60 * 24);
-
-      return sum + Number(nights) * Number(reservation.room.pricePerNight);
-    }, 0);
+        (new Date(reservation.checkOut).getTime() -
+          new Date(reservation.checkIn).getTime()) /
+          (1000 * 60 * 60 * 24)
+      );
+      const room = await prisma.room.findUnique({
+        where: {
+          id: reservation.roomId,
+        },
+      });
+      projectedRevenue += Number(nights) * Number(room?.pricePerNight ?? 0);
+    }
 
 
     // Taxa de ocupação por dia nos próximos 30 dias
