@@ -1,12 +1,15 @@
 // app/api/reports/occupancy/route.ts
-import { prisma } from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   const total = await prisma.room.count();
-  const available = await prisma.room.count({ where: { status: 'AVAILABLE' } });
-  const occupied = await prisma.room.count({ where: { status: 'OCCUPIED' } });
-  const maintenance = await prisma.room.count({ where: { status: 'MAINTENANCE' } });
+  const available = await prisma.room.count({ where: { status: "AVAILABLE" } });
+  const occupied = await prisma.room.count({ where: { status: "OCCUPIED" } });
+  const maintenance = await prisma.room.count({
+    where: { status: "MAINTENANCE" },
+  });
 
   return NextResponse.json({
     total,

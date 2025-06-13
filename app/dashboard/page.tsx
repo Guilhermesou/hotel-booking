@@ -1,14 +1,40 @@
-"use client"
+"use client";
 
-
-import React, { useEffect, useState } from 'react';
-import { Card, CardBody, CardHeader, Button, Select, SelectItem, Spinner } from "@heroui/react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
-import { DollarSign, Users, Bed, Wrench, TrendingUp, Calendar, AlertTriangle, CheckCircle } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Select,
+  SelectItem,
+  Spinner,
+} from "@heroui/react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import {
+  DollarSign,
+  Users,
+  Bed,
+  Wrench,
+  AlertTriangle,
+  CheckCircle,
+} from "lucide-react";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState('30');
+  const [period, setPeriod] = useState("30");
   const [data, setData] = useState<DashboardData>({
     occupancy: null,
     revenue: null,
@@ -16,7 +42,7 @@ const Dashboard = () => {
     guests: null,
     maintenance: null,
     forecast: null,
-    staffPerformance: null
+    staffPerformance: null,
   });
 
   useEffect(() => {
@@ -30,25 +56,33 @@ const Dashboard = () => {
           guestsRes,
           maintenanceRes,
           forecastRes,
-          staffRes
+          staffRes,
         ] = await Promise.all([
-          fetch('/api/reports/occupancy'),
+          fetch("/api/reports/occupancy"),
           fetch(`/api/reports/revenue?period=${period}`),
           fetch(`/api/reports/bookings?period=${period}`),
-          fetch('/api/reports/guests'),
-          fetch('/api/reports/maintenance'),
-          fetch('/api/reports/forecast'),
-          fetch(`/api/reports/staff-performance?period=${period}`)
+          fetch("/api/reports/guests"),
+          fetch("/api/reports/maintenance"),
+          fetch("/api/reports/forecast"),
+          fetch(`/api/reports/staff-performance?period=${period}`),
         ]);
 
-        const [occupancy, revenue, bookings, guests, maintenance, forecast, staffPerformance] = await Promise.all([
+        const [
+          occupancy,
+          revenue,
+          bookings,
+          guests,
+          maintenance,
+          forecast,
+          staffPerformance,
+        ] = await Promise.all([
           occupancyRes.json(),
           revenueRes.json(),
           bookingsRes.json(),
           guestsRes.json(),
           maintenanceRes.json(),
           forecastRes.json(),
-          staffRes.json()
+          staffRes.json(),
         ]);
 
         setData({
@@ -58,10 +92,10 @@ const Dashboard = () => {
           guests,
           maintenance,
           forecast,
-          staffPerformance
+          staffPerformance,
         });
       } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+        console.error("Erro ao carregar dados:", error);
       } finally {
         setLoading(false);
       }
@@ -142,13 +176,13 @@ const Dashboard = () => {
   }
 
   const formatCurrency = (value: number): string => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(value);
   };
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
   if (loading) {
     return (
@@ -167,10 +201,10 @@ const Dashboard = () => {
           <p className="text-gray-600">Visão geral do desempenho do hotel</p>
         </div>
         <Select
+          className="max-w-xs"
           label="Período"
           selectedKeys={[period]}
           onSelectionChange={(keys) => setPeriod(String(Array.from(keys)[0]))}
-          className="max-w-xs"
         >
           <SelectItem key="7">Últimos 7 dias</SelectItem>
           <SelectItem key="30">Últimos 30 dias</SelectItem>
@@ -187,7 +221,9 @@ const Dashboard = () => {
             </div>
             <div>
               <p className="text-sm text-gray-600">Taxa de Ocupação</p>
-              <p className="text-2xl font-bold">{data.occupancy?.occupancyRate}%</p>
+              <p className="text-2xl font-bold">
+                {data.occupancy?.occupancyRate}%
+              </p>
               <p className="text-xs text-gray-500">
                 {data.occupancy?.occupied}/{data.occupancy?.total} quartos
               </p>
@@ -202,7 +238,9 @@ const Dashboard = () => {
             </div>
             <div>
               <p className="text-sm text-gray-600">Receita Total</p>
-              <p className="text-2xl font-bold">{formatCurrency(data.revenue?.totalRevenue || 0)}</p>
+              <p className="text-2xl font-bold">
+                {formatCurrency(data.revenue?.totalRevenue || 0)}
+              </p>
               <p className="text-xs text-gray-500">
                 ADR: {formatCurrency(data.revenue?.adr || 0)}
               </p>
@@ -217,7 +255,9 @@ const Dashboard = () => {
             </div>
             <div>
               <p className="text-sm text-gray-600">Hóspedes Ativos</p>
-              <p className="text-2xl font-bold">{data.guests?.activeGuests || 0}</p>
+              <p className="text-2xl font-bold">
+                {data.guests?.activeGuests || 0}
+              </p>
               <p className="text-xs text-gray-500">
                 +{data.guests?.newGuests || 0} novos
               </p>
@@ -232,7 +272,9 @@ const Dashboard = () => {
             </div>
             <div>
               <p className="text-sm text-gray-600">Manutenção</p>
-              <p className="text-2xl font-bold">{data.maintenance?.pendingTasks || 0}</p>
+              <p className="text-2xl font-bold">
+                {data.maintenance?.pendingTasks || 0}
+              </p>
               <p className="text-xs text-gray-500">
                 {data.maintenance?.overdueTasks || 0} atrasadas
               </p>
@@ -249,13 +291,18 @@ const Dashboard = () => {
             <h3 className="text-lg font-semibold">Receita Diária</h3>
           </CardHeader>
           <CardBody>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer height={300} width="100%">
               <LineChart data={data.revenue?.revenueByDay || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-                <Line type="monotone" dataKey="revenue" stroke="#8884d8" strokeWidth={2} />
+                <Line
+                  dataKey="revenue"
+                  stroke="#8884d8"
+                  strokeWidth={2}
+                  type="monotone"
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardBody>
@@ -264,16 +311,27 @@ const Dashboard = () => {
         {/* Ocupação prevista */}
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold">Previsão de Ocupação (30 dias)</h3>
+            <h3 className="text-lg font-semibold">
+              Previsão de Ocupação (30 dias)
+            </h3>
           </CardHeader>
           <CardBody>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data.forecast?.occupancyByDay?.slice(0, 10) || []}>
+            <ResponsiveContainer height={300} width="100%">
+              <LineChart
+                data={data.forecast?.occupancyByDay?.slice(0, 10) || []}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Tooltip formatter={(value) => `${Number(value).toFixed(1)}%`} />
-                <Line type="monotone" dataKey="occupancyRate" stroke="#82ca9d" strokeWidth={2} />
+                <Tooltip
+                  formatter={(value) => `${Number(value).toFixed(1)}%`}
+                />
+                <Line
+                  dataKey="occupancyRate"
+                  stroke="#82ca9d"
+                  strokeWidth={2}
+                  type="monotone"
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardBody>
@@ -288,20 +346,25 @@ const Dashboard = () => {
             <h3 className="text-lg font-semibold">Status das Reservas</h3>
           </CardHeader>
           <CardBody>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer height={250} width="100%">
               <PieChart>
                 <Pie
-                  data={data.bookings?.bookingsByStatus || []}
                   cx="50%"
                   cy="50%"
-                  outerRadius={80}
-                  fill="#8884d8"
+                  data={data.bookings?.bookingsByStatus || []}
                   dataKey="_count.id"
+                  fill="#8884d8"
                   nameKey="status"
+                  outerRadius={80}
                 >
-                  {(data.bookings?.bookingsByStatus || []).map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
+                  {(data.bookings?.bookingsByStatus || []).map(
+                    (entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ),
+                  )}
                 </Pie>
                 <Tooltip />
               </PieChart>
@@ -315,7 +378,7 @@ const Dashboard = () => {
             <h3 className="text-lg font-semibold">Performance da Equipe</h3>
           </CardHeader>
           <CardBody>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer height={250} width="100%">
               <BarChart data={data.staffPerformance || []}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
@@ -335,23 +398,41 @@ const Dashboard = () => {
           <CardBody className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">RevPAR</span>
-              <span className="font-semibold">{formatCurrency(data.revenue?.revpar || 0)}</span>
+              <span className="font-semibold">
+                {formatCurrency(data.revenue?.revpar || 0)}
+              </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Taxa de Cancelamento</span>
-              <span className="font-semibold">{data.bookings?.cancellationRate || 0}%</span>
+              <span className="text-sm text-gray-600">
+                Taxa de Cancelamento
+              </span>
+              <span className="font-semibold">
+                {data.bookings?.cancellationRate || 0}%
+              </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Tempo Médio de Estadia</span>
-              <span className="font-semibold">{data.revenue?.averageStayLength?.toFixed(1) || 0} dias</span>
+              <span className="text-sm text-gray-600">
+                Tempo Médio de Estadia
+              </span>
+              <span className="font-semibold">
+                {data.revenue?.averageStayLength?.toFixed(1) || 0} dias
+              </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Hóspedes Recorrentes</span>
-              <span className="font-semibold">{data.guests?.recurringGuests || 0}</span>
+              <span className="text-sm text-gray-600">
+                Hóspedes Recorrentes
+              </span>
+              <span className="font-semibold">
+                {data.guests?.recurringGuests || 0}
+              </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Receita Projetada (30d)</span>
-              <span className="font-semibold">{formatCurrency(data.forecast?.projectedRevenue || 0)}</span>
+              <span className="text-sm text-gray-600">
+                Receita Projetada (30d)
+              </span>
+              <span className="font-semibold">
+                {formatCurrency(data.forecast?.projectedRevenue || 0)}
+              </span>
             </div>
           </CardBody>
         </Card>
@@ -369,20 +450,29 @@ const Dashboard = () => {
           <CardBody className="space-y-3">
             {(data.maintenance?.overdueTasks ?? 0) > 0 && (
               <div className="flex items-center gap-2 p-2 bg-red-50 rounded-lg">
-                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                <span className="text-sm">{data.maintenance?.overdueTasks ?? 0} tarefas de manutenção atrasadas</span>
+                <div className="w-2 h-2 bg-red-500 rounded-full" />
+                <span className="text-sm">
+                  {data.maintenance?.overdueTasks ?? 0} tarefas de manutenção
+                  atrasadas
+                </span>
               </div>
             )}
             {(data.maintenance?.roomsInMaintenance ?? 0) > 0 && (
               <div className="flex items-center gap-2 p-2 bg-yellow-50 rounded-lg">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                <span className="text-sm">{data.maintenance?.roomsInMaintenance ?? 0} quartos em manutenção</span>
+                <div className="w-2 h-2 bg-yellow-500 rounded-full" />
+                <span className="text-sm">
+                  {data.maintenance?.roomsInMaintenance ?? 0} quartos em
+                  manutenção
+                </span>
               </div>
             )}
             {(data.bookings?.cancellationRate ?? 0) > 10 && (
               <div className="flex items-center gap-2 p-2 bg-orange-50 rounded-lg">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span className="text-sm">Taxa de cancelamento alta: {data.bookings?.cancellationRate ?? 0}%</span>
+                <div className="w-2 h-2 bg-orange-500 rounded-full" />
+                <span className="text-sm">
+                  Taxa de cancelamento alta:{" "}
+                  {data.bookings?.cancellationRate ?? 0}%
+                </span>
               </div>
             )}
           </CardBody>
@@ -398,7 +488,10 @@ const Dashboard = () => {
           <CardBody>
             <div className="space-y-2">
               {data.guests?.topGuests?.slice(0, 5).map((guest, index) => (
-                <div key={guest.id} className="flex justify-between items-center py-1">
+                <div
+                  key={guest.id}
+                  className="flex justify-between items-center py-1"
+                >
                   <span className="text-sm">{guest.name}</span>
                   <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                     {guest.reservationCount} reservas

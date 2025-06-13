@@ -1,11 +1,13 @@
-import { prisma } from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   const tasks = await prisma.task.findMany({
     include: { staff: true },
-    orderBy: { dueDate: 'asc' }
+    orderBy: { dueDate: "asc" },
   });
+
   return NextResponse.json(tasks);
 }
 
@@ -19,12 +21,17 @@ export async function POST(req: Request) {
         staffId,
         description,
         status,
-        dueDate: new Date(dueDate)
+        dueDate: new Date(dueDate),
       },
     });
+
     return NextResponse.json(task);
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Erro ao criar tarefa' }, { status: 500 });
+
+    return NextResponse.json(
+      { error: "Erro ao criar tarefa" },
+      { status: 500 },
+    );
   }
 }

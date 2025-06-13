@@ -1,10 +1,10 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface HotelStore {
-  selectedHotel: Hotel | null
-  setSelectedHotel: (hotel: Hotel) => void
-  clearHotel: () => void
+  selectedHotel: Hotel | null;
+  setSelectedHotel: (hotel: Hotel) => void;
+  clearHotel: () => void;
 }
 
 export const useHotelStore = create<HotelStore>()(
@@ -15,7 +15,7 @@ export const useHotelStore = create<HotelStore>()(
       clearHotel: () => set({ selectedHotel: null }),
     }),
     {
-      name: 'hotel-store',
-    }
-  )
-)
+      name: "hotel-store",
+    },
+  ),
+);

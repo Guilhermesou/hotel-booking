@@ -1,5 +1,6 @@
-import { prisma } from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
@@ -8,7 +9,7 @@ export async function GET() {
       where: {
         reservations: {
           some: {
-            status: 'CHECKED_IN',
+            status: "CHECKED_IN",
           },
         },
       },
@@ -16,8 +17,9 @@ export async function GET() {
 
     // Novos hóspedes (últimos 30 dias)
     const thirtyDaysAgo = new Date();
+
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
+
     const newGuests = await prisma.guest.count({
       where: {
         createdAt: {
@@ -46,7 +48,7 @@ export async function GET() {
       },
       orderBy: {
         reservations: {
-          _count: 'desc',
+          _count: "desc",
         },
       },
       take: 10,
@@ -105,19 +107,19 @@ export async function GET() {
       activeGuests,
       newGuests,
       recurringGuests: Number((recurringGuests as any)[0]?.count || 0),
-      topGuests: topGuests.map(guest => ({
+      topGuests: topGuests.map((guest) => ({
         id: guest.id,
         name: guest.name,
         reservationCount: guest._count.reservations,
       })),
       guestsByCountry, // será um array vazio se não implementado
     });
-    
   } catch (error) {
-    console.error('Erro ao buscar dados de hóspedes:', error);
+    console.error("Erro ao buscar dados de hóspedes:", error);
+
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
-      { status: 500 }
+      { error: "Erro interno do servidor" },
+      { status: 500 },
     );
   }
 }

@@ -1,5 +1,6 @@
-import { prisma } from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   const data = await req.json();
@@ -14,10 +15,15 @@ export async function POST(req: Request) {
         endTime: new Date(endTime),
       },
     });
+
     return NextResponse.json(shift);
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Erro ao criar escala' }, { status: 500 });
+
+    return NextResponse.json(
+      { error: "Erro ao criar escala" },
+      { status: 500 },
+    );
   }
 }
 
@@ -27,7 +33,7 @@ export async function GET() {
       staff: true,
     },
     orderBy: {
-      date: 'asc',
+      date: "asc",
     },
   });
 

@@ -1,19 +1,22 @@
-import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcrypt'
-import * as jwt from 'jsonwebtoken'
-import { cookies } from 'next/headers'
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
+import * as jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 
-const prisma = new PrismaClient()
-const JWT_SECRET = process.env.JWT_SECRET!
+const prisma = new PrismaClient();
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function POST(req: Request) {
-  const { email, password } = await req.json()
+  const { email, password } = await req.json();
 
-  const user = await prisma.user.findUnique({ where: { email } })
+  const user = await prisma.user.findUnique({ where: { email } });
 
-  if (!user || !await bcrypt.compare(password, user.passwordHash)) {
-    return NextResponse.json({ error: 'Credenciais inválidas' }, { status: 401 })
+  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+    return NextResponse.json(
+      { error: "Credenciais inválidas" },
+      { status: 401 },
+    );
   }
 
   const token = jwt.sign(
@@ -23,16 +26,17 @@ export async function POST(req: Request) {
       hotelId: user.hotelId,
     },
     JWT_SECRET,
-    { expiresIn: '7d' }
-  )
+    { expiresIn: "7d" },
+  );
 
- const cookiesStore = await cookies()
-  cookiesStore.set('token', token, {
+  const cookiesStore = await cookies();
+
+  cookiesStore.set("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60 * 24 * 7,
-    path: '/',
-  })
+    path: "/",
+  });
 
-  return NextResponse.json({ message: 'Login realizado com sucesso' })
+  return NextResponse.json({ message: "Login realizado com sucesso" });
 }

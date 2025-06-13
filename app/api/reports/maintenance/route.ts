@@ -1,24 +1,25 @@
-import { prisma } from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
     // Quartos em manutenção
     const roomsInMaintenance = await prisma.room.count({
-      where: { status: 'MAINTENANCE' },
+      where: { status: "MAINTENANCE" },
     });
 
     // Tarefas de manutenção pendentes
     const pendingTasks = await prisma.task.count({
       where: {
-        status: 'PENDING',
+        status: "PENDING",
       },
     });
 
     // Tarefas atrasadas
     const overdueTasks = await prisma.task.count({
       where: {
-        status: 'PENDING',
+        status: "PENDING",
         dueDate: {
           lt: new Date(),
         },
@@ -28,7 +29,7 @@ export async function GET() {
     // Tempo médio de resolução de tarefas
     const completedTasks = await prisma.task.findMany({
       where: {
-        status: 'COMPLETED',
+        status: "COMPLETED",
         completedAt: { not: null as any },
         createdAt: { not: null as any }, // Garantir que createdAt existe
       },
@@ -38,12 +39,18 @@ export async function GET() {
       },
     });
 
-    const averageResolutionTime = completedTasks.length > 0
-      ? completedTasks.reduce((sum, task) => {
-          const resolutionTime = new Date(task.completedAt!).getTime() - new Date(task.createdAt).getTime();
-          return sum + resolutionTime;
-        }, 0) / completedTasks.length / (1000 * 60 * 60) // em horas
-      : 0;
+    const averageResolutionTime =
+      completedTasks.length > 0
+        ? completedTasks.reduce((sum, task) => {
+            const resolutionTime =
+              new Date(task.completedAt!).getTime() -
+              new Date(task.createdAt).getTime();
+
+            return sum + resolutionTime;
+          }, 0) /
+          completedTasks.length /
+          (1000 * 60 * 60) // em horas
+        : 0;
 
     // Tarefas por categoria - removido temporariamente
     // const tasksByCategory = [];
@@ -56,10 +63,11 @@ export async function GET() {
       // tasksByCategory, // comentado temporariamente
     });
   } catch (error) {
-    console.error('Erro ao buscar dados de manutenção:', error);
+    console.error("Erro ao buscar dados de manutenção:", error);
+
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
-      { status: 500 }
+      { error: "Erro interno do servidor" },
+      { status: 500 },
     );
   }
 }

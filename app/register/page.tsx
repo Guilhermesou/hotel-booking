@@ -54,59 +54,77 @@ export default function RegisterPage() {
     <Card className="max-w-lg mx-auto mt-10 p-6 space-y-6">
       <h1 className="text-2xl font-bold">Cadastro de Hotel</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4 overflow-y-scroll">
+      <form className="space-y-4 overflow-y-scroll" onSubmit={handleSubmit}>
         <div>
-          <label className="block text-sm font-medium mb-1">Nome do Hotel</label>
+          <label className="block text-sm font-medium mb-1" htmlFor="hotelName">
+            Nome do Hotel
+          </label>
           <Input
-            type="text"
+            required
+            id="hotelName"
             name="hotelName"
+            type="text"
             value={formData.hotelName}
             onChange={handleChange}
-            required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">CNPJ</label>
+          <label className="block text-sm font-medium mb-1" htmlFor="cnpj">
+            CNPJ
+          </label>
           <Input
-            type="text"
+            required
+            id="cnpj"
             name="cnpj"
+            type="text"
             value={formData.cnpj}
             onChange={handleChange}
-            required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Endereço</label>
+          <label className="block text-sm font-medium mb-1" htmlFor="address">
+            Endereço
+          </label>
           <Input
-            type="text"
+            required
+            id="address"
             name="address"
+            type="text"
             value={formData.address}
             onChange={handleChange}
-            required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Telefone</label>
+          <label className="block text-sm font-medium mb-1" htmlFor="phone">
+            Telefone
+          </label>
           <Input
-            type="text"
+            required
+            id="phone"
             name="phone"
+            type="text"
             value={formData.phone}
             onChange={handleChange}
-            required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">E-mail do Hotel</label>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="hotelEmail"
+          >
+            E-mail do Hotel
+          </label>
           <Input
-            type="email"
+            required
+            id="hotelEmail"
             name="hotelEmail"
+            type="email"
             value={formData.hotelEmail}
             onChange={handleChange}
-            required
           />
         </div>
 
@@ -115,42 +133,57 @@ export default function RegisterPage() {
         <h2 className="text-xl font-semibold">Administrador</h2>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Nome</label>
+          <label className="block text-sm font-medium mb-1" htmlFor="adminName">
+            Nome
+          </label>
           <Input
-            type="text"
+            required
+            id="adminName"
             name="adminName"
+            type="text"
             value={formData.adminName}
             onChange={handleChange}
-            required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">E-mail</label>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="adminEmail"
+          >
+            E-mail
+          </label>
           <Input
-            type="email"
+            required
+            id="adminEmail"
             name="adminEmail"
+            type="email"
             value={formData.adminEmail}
             onChange={handleChange}
-            required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Senha</label>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="adminPassword"
+          >
+            Senha
+          </label>
           <Input
-            type="password"
+            required
+            id="adminPassword"
             name="adminPassword"
+            type="password"
             value={formData.adminPassword}
             onChange={handleChange}
-            required
           />
         </div>
 
         <Button
-          type="submit"
-          isLoading={loading}
           className="w-full bg-blue-600 text-white hover:bg-blue-700"
+          isLoading={loading}
+          type="submit"
         >
           {loading ? "Cadastrando..." : "Cadastrar"}
         </Button>

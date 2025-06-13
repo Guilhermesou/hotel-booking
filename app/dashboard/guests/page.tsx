@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Table,
   TableHeader,
@@ -21,10 +21,16 @@ import {
   Card,
   CardBody,
   useDisclosure,
-  Spinner
-} from '@heroui/react';
-import { SearchIcon, PlusIcon, EyeIcon, EditIcon, TrashIcon } from 'lucide-react';
-import Link from 'next/link';
+  Spinner,
+} from "@heroui/react";
+import {
+  SearchIcon,
+  PlusIcon,
+  EyeIcon,
+  EditIcon,
+  TrashIcon,
+} from "lucide-react";
+import Link from "next/link";
 
 interface Guest {
   id: number;
@@ -49,29 +55,37 @@ interface PaginationData {
 export default function GuestsPage() {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState<PaginationData>({
     total: 0,
     pages: 1,
     currentPage: 1,
-    limit: 10
+    limit: 10,
   });
   const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
 
-  const { isOpen: isViewOpen, onOpen: onViewOpen, onClose: onViewClose } = useDisclosure();
-  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+  const {
+    isOpen: isViewOpen,
+    onOpen: onViewOpen,
+    onClose: onViewClose,
+  } = useDisclosure();
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onClose: onDeleteClose,
+  } = useDisclosure();
 
   const fetchGuests = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: '10'
+        limit: "10",
       });
 
       if (searchValue) {
-        params.append('search', searchValue);
+        params.append("search", searchValue);
       }
 
       const response = await fetch(`/api/guests?${params}`);
@@ -81,10 +95,10 @@ export default function GuestsPage() {
         setGuests(data.guests);
         setPagination(data.pagination);
       } else {
-        console.error('Erro ao carregar hóspedes:', data.error);
+        console.error("Erro ao carregar hóspedes:", data.error);
       }
     } catch (error) {
-      console.error('Erro ao carregar hóspedes:', error);
+      console.error("Erro ao carregar hóspedes:", error);
     } finally {
       setLoading(false);
     }
@@ -95,7 +109,7 @@ export default function GuestsPage() {
 
     try {
       const response = await fetch(`/api/guests/${selectedGuest.id}`, {
-        method: 'DELETE'
+        method: "DELETE",
       });
 
       if (response.ok) {
@@ -103,11 +117,12 @@ export default function GuestsPage() {
         onDeleteClose();
       } else {
         const data = await response.json();
-        alert(data.error || 'Erro ao deletar hóspede');
+
+        alert(data.error || "Erro ao deletar hóspede");
       }
     } catch (error) {
-      console.error('Erro ao deletar hóspede:', error);
-      alert('Erro ao deletar hóspede');
+      console.error("Erro ao deletar hóspede:", error);
+      alert("Erro ao deletar hóspede");
     }
   };
 
@@ -117,47 +132,50 @@ export default function GuestsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'CONFIRMED':
-        return 'success';
-      case 'CHECKED_IN':
-        return 'primary';
-      case 'CHECKED_OUT':
-        return 'default';
-      case 'CANCELLED':
-        return 'danger';
+      case "CONFIRMED":
+        return "success";
+      case "CHECKED_IN":
+        return "primary";
+      case "CHECKED_OUT":
+        return "default";
+      case "CANCELLED":
+        return "danger";
       default:
-        return 'warning';
+        return "warning";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'CONFIRMED':
-        return 'Confirmada';
-      case 'CHECKED_IN':
-        return 'Check-in';
-      case 'CHECKED_OUT':
-        return 'Check-out';
-      case 'CANCELLED':
-        return 'Cancelada';
-      case 'PENDING':
-        return 'Pendente';
+      case "CONFIRMED":
+        return "Confirmada";
+      case "CHECKED_IN":
+        return "Check-in";
+      case "CHECKED_OUT":
+        return "Check-out";
+      case "CANCELLED":
+        return "Cancelada";
+      case "PENDING":
+        return "Pendente";
       default:
         return status;
     }
   };
 
   const columns = [
-    { key: 'name', label: 'Nome' },
-    { key: 'contact', label: 'Contato' },
-    { key: 'document', label: 'Documento' },
-    { key: 'reservations', label: 'Reservas' },
-    { key: 'actions', label: 'Ações' }
+    { key: "name", label: "Nome" },
+    { key: "contact", label: "Contato" },
+    { key: "document", label: "Documento" },
+    { key: "reservations", label: "Reservas" },
+    { key: "actions", label: "Ações" },
   ];
 
-  if (loading) return (<div className='flex justify-center items-center h-64'>
-    <Spinner size="lg" />
-  </div>);
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spinner size="lg" />
+      </div>
+    );
 
   return (
     <div className="max-w-6xl mx-auto mt-10 px-4">
@@ -176,6 +194,7 @@ export default function GuestsPage() {
       <Card className="mb-6">
         <CardBody>
           <Input
+            className="max-w-md"
             placeholder="Buscar hóspede por nome, email, documento ou telefone..."
             startContent={<SearchIcon size={16} />}
             value={searchValue}
@@ -183,7 +202,6 @@ export default function GuestsPage() {
               setSearchValue(e.target.value);
               setPage(1);
             }}
-            className="max-w-md"
           />
         </CardBody>
       </Card>
@@ -193,40 +211,44 @@ export default function GuestsPage() {
           <Table aria-label="Tabela de hóspedes">
             <TableHeader columns={columns}>
               {(column) => (
-                <TableColumn key={column.key}>
-                  {column.label}
-                </TableColumn>
+                <TableColumn key={column.key}>{column.label}</TableColumn>
               )}
             </TableHeader>
             <TableBody
-              items={guests}
-              isLoading={loading}
               emptyContent="Nenhum hóspede encontrado"
+              isLoading={loading}
+              items={guests}
             >
               {(guest) => (
                 <TableRow key={guest.id}>
                   <TableCell>
                     <User
-                      name={guest.name}
-                      description={guest.email}
                       avatarProps={{
                         name: guest.name.charAt(0),
-                        size: 'sm'
+                        size: "sm",
                       }}
+                      description={guest.email}
+                      name={guest.name}
                     />
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col">
                       <span className="text-sm">{guest.phone}</span>
                       {guest.email && (
-                        <span className="text-xs text-gray-500">{guest.email}</span>
+                        <span className="text-xs text-gray-500">
+                          {guest.email}
+                        </span>
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium">{guest.documentType}</span>
-                      <span className="text-xs text-gray-500">{guest.documentNumber}</span>
+                      <span className="text-sm font-medium">
+                        {guest.documentType}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {guest.documentNumber}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -234,16 +256,18 @@ export default function GuestsPage() {
                       <span className="text-sm font-medium">
                         {guest.reservations.length} reserva(s)
                       </span>
-                      {guest.reservations.slice(0, 2).map((reservation, index) => (
-                        <Chip
-                          key={index}
-                          size="sm"
-                          color={getStatusColor(reservation.status)}
-                          variant="flat"
-                        >
-                          {getStatusText(reservation.status)}
-                        </Chip>
-                      ))}
+                      {guest.reservations
+                        .slice(0, 2)
+                        .map((reservation, index) => (
+                          <Chip
+                            key={index}
+                            color={getStatusColor(reservation.status)}
+                            size="sm"
+                            variant="flat"
+                          >
+                            {getStatusText(reservation.status)}
+                          </Chip>
+                        ))}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -262,18 +286,18 @@ export default function GuestsPage() {
                       <Link href={`/dashboard/guests/${guest.id}/edit`}>
                         <Button
                           isIconOnly
+                          color="primary"
                           size="sm"
                           variant="light"
-                          color="primary"
                         >
                           <EditIcon size={16} />
                         </Button>
                       </Link>
                       <Button
                         isIconOnly
+                        color="danger"
                         size="sm"
                         variant="light"
-                        color="danger"
                         onClick={() => {
                           setSelectedGuest(guest);
                           onDeleteOpen();
@@ -291,8 +315,8 @@ export default function GuestsPage() {
           {pagination.pages > 1 && (
             <div className="flex justify-center mt-4">
               <Pagination
-                total={pagination.pages}
                 page={page}
+                total={pagination.pages}
                 onChange={setPage}
               />
             </div>
@@ -301,7 +325,7 @@ export default function GuestsPage() {
       </Card>
 
       {/* Modal de Visualização */}
-      <Modal isOpen={isViewOpen} onClose={onViewClose} size="2xl">
+      <Modal isOpen={isViewOpen} size="2xl" onClose={onViewClose}>
         <ModalContent>
           <ModalHeader>
             <h3>Detalhes do Hóspede</h3>
@@ -316,47 +340,71 @@ export default function GuestsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Email</p>
-                    <p>{selectedGuest.email || 'Não informado'}</p>
+                    <p>{selectedGuest.email || "Não informado"}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Telefone</p>
+                    <p className="text-sm font-medium text-gray-600">
+                      Telefone
+                    </p>
                     <p>{selectedGuest.phone}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Documento</p>
-                    <p>{selectedGuest.documentType}: {selectedGuest.documentNumber}</p>
+                    <p className="text-sm font-medium text-gray-600">
+                      Documento
+                    </p>
+                    <p>
+                      {selectedGuest.documentType}:{" "}
+                      {selectedGuest.documentNumber}
+                    </p>
                   </div>
                 </div>
-                
+
                 {selectedGuest.preferences && (
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Preferências</p>
+                    <p className="text-sm font-medium text-gray-600">
+                      Preferências
+                    </p>
                     <p>{selectedGuest.preferences}</p>
                   </div>
                 )}
-                
+
                 {selectedGuest.notes && (
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Observações</p>
+                    <p className="text-sm font-medium text-gray-600">
+                      Observações
+                    </p>
                     <p>{selectedGuest.notes}</p>
                   </div>
                 )}
 
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-2">Histórico de Reservas</p>
+                  <p className="text-sm font-medium text-gray-600 mb-2">
+                    Histórico de Reservas
+                  </p>
                   <div className="space-y-2">
                     {selectedGuest.reservations.length > 0 ? (
                       selectedGuest.reservations.map((reservation, index) => (
-                        <div key={index} className="p-3 bg-gray-50 rounded-lg flex justify-between items-center">
+                        <div
+                          key={index}
+                          className="p-3 bg-gray-50 rounded-lg flex justify-between items-center"
+                        >
                           <div>
-                            <p className="font-medium">Quarto {reservation.room?.number}</p>
+                            <p className="font-medium">
+                              Quarto {reservation.room?.number}
+                            </p>
                             <p className="text-sm text-gray-600">
-                              {new Date(reservation.checkIn).toLocaleDateString()} - {new Date(reservation.checkOut).toLocaleDateString()}
+                              {new Date(
+                                reservation.checkIn,
+                              ).toLocaleDateString()}{" "}
+                              -{" "}
+                              {new Date(
+                                reservation.checkOut,
+                              ).toLocaleDateString()}
                             </p>
                           </div>
                           <Chip
-                            size="sm"
                             color={getStatusColor(reservation.status)}
+                            size="sm"
                             variant="flat"
                           >
                             {getStatusText(reservation.status)}
@@ -364,7 +412,9 @@ export default function GuestsPage() {
                         </div>
                       ))
                     ) : (
-                      <p className="text-gray-500">Nenhuma reserva encontrada</p>
+                      <p className="text-gray-500">
+                        Nenhuma reserva encontrada
+                      </p>
                     )}
                   </div>
                 </div>
@@ -372,9 +422,7 @@ export default function GuestsPage() {
             )}
           </ModalBody>
           <ModalFooter>
-            <Button onClick={onViewClose}>
-              Fechar
-            </Button>
+            <Button onClick={onViewClose}>Fechar</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -386,8 +434,13 @@ export default function GuestsPage() {
             <h3>Confirmar Exclusão</h3>
           </ModalHeader>
           <ModalBody>
-            <p>Tem certeza que deseja excluir o hóspede <strong>{selectedGuest?.name}</strong>?</p>
-            <p className="text-sm text-gray-600">Esta ação não pode ser desfeita.</p>
+            <p>
+              Tem certeza que deseja excluir o hóspede{" "}
+              <strong>{selectedGuest?.name}</strong>?
+            </p>
+            <p className="text-sm text-gray-600">
+              Esta ação não pode ser desfeita.
+            </p>
           </ModalBody>
           <ModalFooter>
             <Button variant="light" onClick={onDeleteClose}>

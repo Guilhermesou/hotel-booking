@@ -1,8 +1,8 @@
 "use client";
 import { signIn } from "next-auth/react"; // ⬅️ importe aqui
-
 import { useState } from "react";
 import { Input, Button, Card } from "@heroui/react";
+
 import { useHotelStore } from "@/stores/useHotelStore";
 
 export default function LoginPage() {
@@ -22,7 +22,6 @@ export default function LoginPage() {
       [e.target.name]: e.target.value,
     });
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,33 +48,35 @@ export default function LoginPage() {
     <Card className="max-w-md mx-auto mt-10 p-6 space-y-6">
       <h1 className="text-2xl font-bold">Login</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
-          <label className="block text-sm font-medium mb-1">E-mail</label>
+          <label className="block text-sm font-medium mb-1" htmlFor="email">E-mail</label>
           <Input
-            type="email"
+            required
+            id={"email"}
             name="email"
+            type="email"
             value={formData.email}
             onChange={handleChange}
-            required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Senha</label>
+          <label className="block text-sm font-medium mb-1" htmlFor="password">Senha</label>
           <Input
-            type="password"
+            required
+            id="password"
             name="password"
+            type="password"
             value={formData.password}
             onChange={handleChange}
-            required
           />
         </div>
 
         <Button
-          type="submit"
-          isLoading={loading}
           className="w-full bg-blue-600 text-white hover:bg-blue-700"
+          isLoading={loading}
+          type="submit"
         >
           {loading ? "Entrando..." : "Entrar"}
         </Button>

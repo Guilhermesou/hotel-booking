@@ -1,16 +1,18 @@
-import { prisma } from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const period = url.searchParams.get('period') || '30';
+  const period = url.searchParams.get("period") || "30";
   const startDate = new Date();
+
   startDate.setDate(startDate.getDate() - parseInt(period));
 
   try {
     // Reservas por status
     const bookingsByStatus = await prisma.reservation.groupBy({
-      by: ['status'],
+      by: ["status"],
       where: {
         createdAt: {
           gte: startDate,
@@ -41,18 +43,19 @@ export async function GET(req: Request) {
 
     const cancelledBookings = await prisma.reservation.count({
       where: {
-        status: 'CANCELLED',
+        status: "CANCELLED",
         createdAt: {
           gte: startDate,
         },
       },
     });
 
-    const cancellationRate = totalBookings > 0 ? (cancelledBookings / totalBookings) * 100 : 0;
+    const cancellationRate =
+      totalBookings > 0 ? (cancelledBookings / totalBookings) * 100 : 0;
 
     // Reservas por categoria de quarto
     const bookingsByRoomCategory = await prisma.reservation.groupBy({
-      by: ['roomId'],
+      by: ["roomId"],
       where: {
         createdAt: {
           gte: startDate,
@@ -63,15 +66,16 @@ export async function GET(req: Request) {
 
     const roomCategories = await prisma.room.findMany({
       where: {
-        id: { in: bookingsByRoomCategory.map(b => b.roomId) },
+        id: { in: bookingsByRoomCategory.map((b) => b.roomId) },
       },
       select: { id: true, category: true },
     });
 
-    const bookingsByCategory = bookingsByRoomCategory.map(booking => {
-      const room = roomCategories.find(r => r.id === booking.roomId);
+    const bookingsByCategory = bookingsByRoomCategory.map((booking) => {
+      const room = roomCategories.find((r) => r.id === booking.roomId);
+
       return {
-        category: room?.category || 'Desconhecido',
+        category: room?.category || "Desconhecido",
         count: booking._count.id,
       };
     });
@@ -84,10 +88,11 @@ export async function GET(req: Request) {
       totalBookings,
     });
   } catch (error) {
-    console.error('Erro ao buscar dados de reservas:', error);
+    console.error("Erro ao buscar dados de reservas:", error);
+
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
-      { status: 500 }
+      { error: "Erro interno do servidor" },
+      { status: 500 },
     );
   }
 }

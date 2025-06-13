@@ -74,8 +74,8 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
           <SunFilledIcon size={22} />
         ) : (
           <MoonFilledIcon size={22} />
-        )} 
-        {!isSelected || isSSR ? 'Tema Claro' : 'Tema Escuro'}
+        )}
+        {!isSelected || isSSR ? "Tema Claro" : "Tema Escuro"}
       </div>
     </Component>
   );
