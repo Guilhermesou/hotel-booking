@@ -23,33 +23,59 @@ export async function GET(req: Request) {
       },
     });
 
-    const totalRevenue = reservations.reduce((sum, reservation) => {
-      const nights = Math.ceil(
-        (new Date(reservation.checkOut).getTime() -
-          new Date(reservation.checkIn).getTime()) /
-          (1000 * 60 * 60 * 24),
-      );
+    const totalRevenue = (
+      await Promise.all(
+        reservations.map(async (reservation: Reservation) => {
+          const nights = Math.ceil(
+            (new Date(reservation.checkOut).getTime() -
+              new Date(reservation.checkIn).getTime()) /
+            (1000 * 60 * 60 * 24)
+          );
 
-      return sum + Number(reservation.room.pricePerNight) * nights;
-    }, 0);
+          const room = await prisma.room.findUnique({
+            where: { id: reservation.roomId },
+          });
+
+          return room ? Number(room.pricePerNight) * nights : 0;
+        })
+      )
+    ).reduce((sum, revenue) => sum + revenue, 0);
+
 
     // Receita por dia
-    const revenueByDay = reservations.reduce(
-      (acc, reservation) => {
+    const revenueEntries = await Promise.all(
+      reservations.map(async (reservation) => {
         const date = new Date(reservation.checkOut).toISOString().split("T")[0];
+
         const nights = Math.ceil(
           (new Date(reservation.checkOut).getTime() -
             new Date(reservation.checkIn).getTime()) /
-            (1000 * 60 * 60 * 24),
+          (1000 * 60 * 60 * 24)
         );
-        const revenue = Number(reservation.room.pricePerNight) * nights;
 
-        acc[date] = (acc[date] || 0) + revenue;
+        const room = await prisma.room.findUnique({
+          where: { id: reservation.roomId },
+        });
 
-        return acc;
-      },
-      {} as Record<string, number>,
+        if (!room) return null;
+
+        const revenue = Number(room.pricePerNight) * nights;
+
+        return { date, revenue };
+      })
     );
+
+    // Agrupar os resultados em um Record<string, number>
+    const revenueByDay = revenueEntries.reduce<Record<string, number>>((acc, entry) => {
+      if (!entry) return acc;
+
+      const { date, revenue } = entry;
+      acc[date] = (acc[date] || 0) + revenue;
+
+      return acc;
+    }, {});
+
+
 
     // ADR (Average Daily Rate) e RevPAR (Revenue Per Available Room)
     const totalRooms = await prisma.room.count();
@@ -59,7 +85,7 @@ export async function GET(req: Request) {
         Math.ceil(
           (new Date(reservation.checkOut).getTime() -
             new Date(reservation.checkIn).getTime()) /
-            (1000 * 60 * 60 * 24),
+          (1000 * 60 * 60 * 24),
         )
       );
     }, 0);
