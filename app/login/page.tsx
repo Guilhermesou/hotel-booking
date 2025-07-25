@@ -1,86 +1,79 @@
 "use client";
-import { signIn } from "next-auth/react"; // ⬅️ importe aqui
-import { useState } from "react";
-import { Input, Button, Card } from "@heroui/react";
+
+import { Input, Button, Link } from "@heroui/react";
+import { useLoginController } from "./useLoginController";
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  // const { setSelectedHotel } = useHotelStore();
-
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
-
-    const res = await signIn("credentials", {
-      redirect: false, // não redireciona automaticamente
-      email: formData.email,
-      password: formData.password,
-    });
-
-    if (res?.ok) {
-      setMessage("Login realizado com sucesso!");
-      window.location.href = "/select_hotel"; // ⬅️ redireciona manualmente
-    } else {
-      setMessage("E-mail ou senha inválidos.");
-    }
-
-    setLoading(false);
-  };
+  const { form, loading, message } = useLoginController();
 
   return (
-    <Card className="max-w-md mx-auto mt-10 p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Login</h1>
+    <div className="flex flex-col gap-6 h-full mx-auto">
+      <div className=" flex justify-center items-center">
+        <img
+          src="./login_logo.png"
+          alt="logo"
+          className="h-80 w-80"
+          style={{ objectFit: "contain" }}
+        />
+      </div>
+      <div className="flex flex-col p-6 gap-4  justify-center">
+        <h1 className="text-2xl font-bold text-center">Entre na sua conta</h1>
 
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <label className="block text-sm font-medium mb-1" htmlFor="email">E-mail</label>
-          <Input
-            required
-            id={"email"}
+        <form className="space-y-4" onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}>
+          <form.Field
             name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
+            children={(field) => (
+              <>
+                <label className="block text-sm font-medium mb-1" htmlFor="email">E-mail</label>
+                <Input
+                  required
+                  id={"email"}
+                  name="email"
+                  type="email"
+                  placeholder="email@hotel.com"
+                  value={field.state.value}
+                  onChange={(event) => field.handleChange(event.target.value)}
+                />
+              </>
+            )}
           />
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-1" htmlFor="password">Senha</label>
-          <Input
-            required
-            id="password"
+          <form.Field
             name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
+            children={(field) => (
+              <>
+                <label className="block text-sm font-medium mb-1" htmlFor="password">Senha</label>
+                <Input
+                  required
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="12345678"
+                  value={field.state.value}
+                  onChange={(event) => field.handleChange(event.target.value)}
+                />
+              </>
+            )}
+
+
           />
-        </div>
 
-        <Button
-          className="w-full bg-blue-600 text-white hover:bg-blue-700"
-          isLoading={loading}
-          type="submit"
-        >
-          {loading ? "Entrando..." : "Entrar"}
-        </Button>
+          <Button
+            className="w-full bg-blue-600 text-white hover:bg-blue-700"
+            isLoading={form.state.isSubmitting}
+            type="submit"
+          >
+            {loading ? "Entrando..." : "Entrar"}
+          </Button>
 
-        {message && <p className="text-center text-sm mt-2">{message}</p>}
-      </form>
-    </Card>
+          <p className="text-center text-sm mt-2">{message}</p>
+
+          <p className="text-center text-xs mt-2">Ainda não possui uma conta? <Link href="/login/register" className="text-blue-600 font-bold text-xs">Faça um teste de 30 dias gratuitamente</Link></p>
+        </form>
+      </div>
+    </div>
   );
 }

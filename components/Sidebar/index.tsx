@@ -1,127 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import {
-  HomeIcon,
   UsersIcon,
-  BedIcon,
-  WrenchIcon,
-  BarChartIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronDownIcon,
   LogOutIcon,
   MenuIcon,
-  XIcon,
-  CalendarIcon,
-  ClipboardListIcon,
-  SettingsIcon,
-  AlarmClockIcon,
+  XIcon
 } from "lucide-react";
 import { Button } from "@heroui/button";
 import { Card, Tooltip } from "@heroui/react";
 
-import { ThemeSwitch } from "./theme-switch";
-import { HotelSelector } from "./HotelSelector";
+import { ThemeSwitch } from "../theme-switch";
+import { HotelSelector } from "../HotelSelector";
 
-import { useHotelStore } from "@/stores/useHotelStore";
+import { signOut } from "next-auth/react";
+import { useDashboardPageController } from "./useDashboardPageController";
 
 export default function Sidebar() {
-  const pathname = usePathname();
-  const { selectedHotel } = useHotelStore();
-
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [openGroups, setOpenGroups] = useState<{ [key: string]: boolean }>({
-    staff: true,
-  });
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) setIsMobileMenuOpen(false);
-    };
-
-    checkIsMobile();
-    window.addEventListener("resize", checkIsMobile);
-
-    return () => window.removeEventListener("resize", checkIsMobile);
-  }, []);
-
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
-
-  const toggleGroup = (key: string) => {
-    setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const navItems = [
-    {
-      label: "Dashboard",
-      icon: HomeIcon,
-      color: "text-blue-500",
-      href: "/dashboard",
-    },
-    {
-      label: "Hóspedes",
-      icon: UsersIcon,
-      color: "text-emerald-500",
-      href: "/dashboard/guests",
-    },
-    {
-      label: "Quartos",
-      icon: BedIcon,
-      color: "text-purple-500",
-      href: "/dashboard/rooms",
-    },
-    {
-      label: "Reservas",
-      icon: CalendarIcon,
-      color: "text-orange-500",
-      href: "/dashboard/reservations",
-    },
-  ];
-
-  const staffItems = [
-    {
-      label: "Início",
-      icon: SettingsIcon,
-      color: "text-cyan-500",
-      href: "/dashboard/staff",
-    },
-    {
-      label: "Escalas",
-      icon: AlarmClockIcon,
-      color: "text-pink-500",
-      href: "/dashboard/staff/shifts",
-    },
-    {
-      label: "Tarefas",
-      icon: ClipboardListIcon,
-      color: "text-yellow-500",
-      href: "/dashboard/staff/tasks",
-    },
-  ];
-
-  const maintenanceItems = [
-    {
-      label: "Manutenção",
-      icon: WrenchIcon,
-      color: "text-red-500",
-      href: "/dashboard/maintenance",
-    },
-    {
-      label: "Relatórios",
-      icon: BarChartIcon,
-      color: "text-indigo-500",
-      href: "/dashboard/reports",
-    },
-  ];
+  const {
+    pathname,
+    selectedHotel, 
+    isCollapsed, 
+    isMobileMenuOpen, 
+    openGroups, 
+    isMobile, 
+    navItems, 
+    staffItems, 
+    maintenanceItems,
+    setIsMobileMenuOpen,
+    setIsCollapsed,
+    toggleGroup
+  } = useDashboardPageController();
 
   const MobileMenuButton = () => (
     <Button
@@ -169,7 +82,7 @@ export default function Sidebar() {
               isIconOnly
               size="sm"
               variant="light"
-              onClick={() => setIsCollapsed(!isCollapsed)}
+              onPress={() => setIsCollapsed(!isCollapsed)}
             >
               {isCollapsed ? (
                 <ChevronRightIcon size={18} />
@@ -181,7 +94,7 @@ export default function Sidebar() {
         </div>
 
         <nav className="flex-1 space-y-1">
-          {navItems.map(({ label, icon: Icon, color, href }) => (
+          {navItems.map(({ label, icon: Icon, href }) => (
             <Tooltip
               key={href}
               content={label}
@@ -191,7 +104,7 @@ export default function Sidebar() {
               <Link href={href}>
                 <Button
                   className={clsx(
-                    `group w-full justify-start ${color}`,
+                    `group w-full justify-start`,
                     {
                       "justify-center": isCollapsed && !isMobile,
                     },
@@ -235,12 +148,12 @@ export default function Sidebar() {
             </Button>
             {(!isCollapsed || isMobile) && openGroups.staff && (
               <div className="pl-6 mt-1 space-y-1">
-                {staffItems.map(({ label, icon: Icon, color, href }) => (
+                {staffItems.map(({ label, icon: Icon, href }) => (
                   <Link key={href} href={href}>
                     <Button
                       className="w-full justify-start text-sm"
                       color="primary"
-                      startContent={<Icon className={color} size={16} />}
+                      startContent={<Icon size={16} />}
                       variant={pathname === href ? "solid" : "light"}
                     >
                       {label}
@@ -254,12 +167,12 @@ export default function Sidebar() {
           {/* Outros */}
           {(!isCollapsed || isMobile) && (
             <div className="mt-2 space-y-1">
-              {maintenanceItems.map(({ label, icon: Icon, color, href }) => (
+              {maintenanceItems.map(({ label, icon: Icon, href }) => (
                 <Link key={href} href={href}>
                   <Button
                     className="w-full justify-start"
                     color="primary"
-                    startContent={<Icon className={color} size={18} />}
+                    startContent={<Icon size={18} />}
                     variant={pathname === href ? "solid" : "light"}
                   >
                     {label}
@@ -281,6 +194,7 @@ export default function Sidebar() {
             color="danger"
             startContent={<LogOutIcon size={18} />}
             variant="light"
+            onPress={() => signOut()}
           >
             {(!isCollapsed || isMobile) && "Sair"}
           </Button>
